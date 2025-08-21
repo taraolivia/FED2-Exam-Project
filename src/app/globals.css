@@ -1,8 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f0ebe5;
   --foreground: #171717;
+}
+
+/* Design tokens (5-step scales) */
+@theme {
+  /* Text */
+  --color-text: #000000;
+
+  /* Background (5) */
+  --color-background-darkest: #d0c1ae;
+  --color-background-darker: #e3dace;
+  --color-background: #f0ebe5; /* base */
+  --color-background-lighter: #f6f3ef;
+  --color-background-lightest: #f6f3ee;
+
+  /* Primary (5) */
+  --color-primary-darkest: #5e7359;
+  --color-primary-darker: #839b7d;
+  --color-primary: #a7b8a3; /* base */
+  --color-primary-lighter: #c8d3c5;
+  --color-primary-lightest: #e3e9e2;
+
+  /* Secondary (5) */
+  --color-secondary-darkest: #8c6d6a;
+  --color-secondary-darker: #a48782;
+  --color-secondary: #c9a9a6; /* base */
+  --color-secondary-lighter: #e2d3d0;
+  --color-secondary-lightest: #f1e6e4;
+
+  /* Accent (5) */
+  --color-accent-darkest: #37312f;
+  --color-accent-darker: #453d3b;
+  --color-accent: #534946; /* base */
+  --color-accent-lighter: #6e625e;
+  --color-accent-lightest: #a19591;
+
+  /* White */
+  --color-white: #ffffff;
+
+  /* Fonts (swap for your real ones) */
+  --font-heading: var(--font-heading), serif;
+  --font-body:
+    var(--font-body), system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
 }
 
 @theme inline {
@@ -23,4 +66,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    font-family: var(--font-body);
+  }
 }
