@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "prebuild": "npm run typecheck && npm run lint && npm run format:check",
     "ci": "npm run typecheck && npm run lint && npm run format:check && npm run build",
-    "prepare": "husky"
+  "prepare": "husky install",
+  "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
     "next": "15.5.0",
@@ -44,4 +45,5 @@
       "git add"
     ]
   }
+  
 }
