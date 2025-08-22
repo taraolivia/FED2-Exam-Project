@@ -1,12 +1,14 @@
 import Image from "next/image";
 import HeroSection from "./components/HeroSection";
 import QuoteSection from "./components/QuoteSection";
+import VenuesGrid from "./components/VenuesGrid";
 
 export default function Home() {
   return (
     <>
       <HeroSection />
       <QuoteSection />
+      <VenuesGrid />
 
       <main className="">This is the main part of the page</main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
