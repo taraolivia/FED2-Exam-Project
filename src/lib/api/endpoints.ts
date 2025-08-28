@@ -1,48 +1,38 @@
-export const API_BASE = process.env.HOLIDAZE_API_BASE!;
+// lib/api/endpoints.ts
+const BASE = process.env.NOROFF_API_BASE ?? "https://v2.api.noroff.dev";
 
-// ---- Auth
-export const auth = {
-  register: () => `${API_BASE}/auth/register`,
-  login: () => `${API_BASE}/auth/login`,
-  createApiKey: () => `${API_BASE}/auth/create-api-key`,
+export type VenueSortField = "name" | "created" | "price";
+export type SortOrder = "asc" | "desc";
+
+export type VenueQueryOpts = {
+  page?: number;
+  limit?: number;
+  sort?: VenueSortField;
+  sortOrder?: SortOrder;
+  _owner?: boolean;
+  _bookings?: boolean;
 };
 
-// ---- Venues (public list/single; search is a separate path)
+function applyCommonParams(u: URL, opts?: VenueQueryOpts) {
+  if (!opts) return;
+  if (opts.page) u.searchParams.set("page", String(opts.page));
+  if (opts.limit) u.searchParams.set("limit", String(opts.limit));
+  if (opts.sort) u.searchParams.set("sort", opts.sort);
+  if (opts.sortOrder) u.searchParams.set("sortOrder", opts.sortOrder);
+  if (opts._owner) u.searchParams.set("_owner", "true");
+  if (opts._bookings) u.searchParams.set("_bookings", "true");
+}
+
 export const venues = {
-  list: (opts?: {
-    page?: number;
-    limit?: number;
-    _owner?: boolean;
-    _bookings?: boolean;
-  }) => {
-    const u = new URL(`${API_BASE}/holidaze/venues`);
-    if (opts?.page) u.searchParams.set("page", String(opts.page));
-    if (opts?.limit) u.searchParams.set("limit", String(opts.limit));
-    if (opts?._owner) u.searchParams.set("_owner", "true");
-    if (opts?._bookings) u.searchParams.set("_bookings", "true");
+  list(opts?: VenueQueryOpts) {
+    const u = new URL(`${BASE}/holidaze/venues`);
+    applyCommonParams(u, opts);
     return u.toString();
   },
-  search: (
-    q: string,
-    opts?: {
-      page?: number;
-      limit?: number;
-      _owner?: boolean;
-      _bookings?: boolean;
-    },
-  ) => {
-    const u = new URL(`${API_BASE}/holidaze/venues/search`);
+  search(q: string, opts?: VenueQueryOpts) {
+    const u = new URL(`${BASE}/holidaze/venues/search`);
     u.searchParams.set("q", q);
-    if (opts?.page) u.searchParams.set("page", String(opts.page));
-    if (opts?.limit) u.searchParams.set("limit", String(opts.limit));
-    if (opts?._owner) u.searchParams.set("_owner", "true");
-    if (opts?._bookings) u.searchParams.set("_bookings", "true");
-    return u.toString();
-  },
-  single: (id: string, flags?: { _owner?: boolean; _bookings?: boolean }) => {
-    const u = new URL(`${API_BASE}/holidaze/venues/${id}`);
-    if (flags?._owner) u.searchParams.set("_owner", "true");
-    if (flags?._bookings) u.searchParams.set("_bookings", "true");
+    applyCommonParams(u, opts);
     return u.toString();
   },
 };

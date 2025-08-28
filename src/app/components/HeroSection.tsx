@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import SearchField from "./SearchField";
+import SearchField from "./SearchFieldHero";
 
 export default function HeroSection() {
   return (
