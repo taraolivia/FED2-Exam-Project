@@ -4,9 +4,15 @@ import { fetchJSON } from "@/lib/api/http";
 
 export async function POST(req: Request) {
   const body = await req.json(); // { email, password }
+  
+  // Validate required fields
+  if (!body.email || !body.password) {
+    return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+  }
+  
   try {
     // Hit Noroff login directly (no API key needed for auth endpoints)
-    const json = await fetchJSON<any>(ep.login(), {
+    const json = await fetchJSON<{ data: { accessToken: string } }>(ep.login(), {
       method: "POST",
       body: JSON.stringify(body),
     });

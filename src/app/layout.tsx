@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Marcellus } from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import { UserProvider } from "@/lib/contexts/UserContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +28,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${marcellus.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <UserProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </UserProvider>
+      </body>
     </html>
   );
 }

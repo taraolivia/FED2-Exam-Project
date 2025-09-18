@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Venue } from "@/lib/schemas/venue";
 import VenueCard from "./VenueCard";
+import VenuesSearchFilter from "./VenuesSearchFilter";
+import { VenuesGridSkeleton } from "./LoadingSkeleton";
 import { useSearchParams } from "next/navigation";
 
 type ApiMeta = {
@@ -20,6 +22,8 @@ type SortOption = {
   id: SortId;
   label: string;
 };
+
+// Move outside component to prevent recreation on renders
 const SORT_OPTIONS: SortOption[] = [
   { id: "alpha", label: "Alphabetically (A–Z)" },
   { id: "new", label: "Newly added" },
@@ -27,17 +31,23 @@ const SORT_OPTIONS: SortOption[] = [
   { id: "priceAsc", label: "Price: low → high" },
 ];
 
-// Safe accessors (in case fields are optional in your schema)
+// Type guard for venue with required properties
+type VenueWithRequiredFields = Venue & {
+  name: string;
+  price: number;
+  created: string;
+  id: string;
+};
+
+// Safe accessors using proper typing
 function getName(v: Venue): string {
-  return (v as unknown as { name?: string }).name ?? "";
+  return v.name ?? "";
 }
 function getPrice(v: Venue): number {
-  const p = (v as unknown as { price?: number }).price;
-  return typeof p === "number" ? p : Number.NEGATIVE_INFINITY; // pushes unknowns to end
+  return typeof v.price === "number" ? v.price : Number.NEGATIVE_INFINITY;
 }
 function getCreated(v: Venue): number {
-  const c = (v as unknown as { created?: string }).created;
-  const t = c ? Date.parse(c) : NaN;
+  const t = v.created ? Date.parse(v.created) : NaN;
   return Number.isFinite(t) ? t : 0;
 }
 
@@ -55,6 +65,8 @@ function compare(sortId: SortId) {
       return (a: Venue, b: Venue) => getPrice(b) - getPrice(a);
     case "priceAsc":
       return (a: Venue, b: Venue) => getPrice(a) - getPrice(b);
+    default:
+      return () => 0;
   }
 }
 
@@ -79,6 +91,7 @@ export default function VenuesGrid() {
   const [page, setPage] = useState(1);
 
   const abortRef = useRef<AbortController | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Fetch ALL venues across pages once per (q) change
   useEffect(() => {
@@ -124,8 +137,7 @@ export default function VenuesGrid() {
         const allData = [first, ...rest].flatMap((r) => r.data);
         const uniqueMap = new Map<string, Venue>();
         for (const v of allData) {
-          const id = (v as unknown as { id?: string }).id ?? "";
-          if (id && !uniqueMap.has(id)) uniqueMap.set(id, v);
+          if (v.id && !uniqueMap.has(v.id)) uniqueMap.set(v.id, v);
         }
         setAll(Array.from(uniqueMap.values()));
       } catch (e) {
@@ -159,42 +171,36 @@ export default function VenuesGrid() {
     setPage(1);
   }, [sortId]);
 
-  return (
-    <section aria-labelledby="venues-heading" className="bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 id="venues-heading" className="font-heading text-3xl">
-              Venues
-            </h2>
-            <p className="mt-1 text-sm text-text/70">
-              Showing <span className="font-medium">{pageItems.length}</span> of{" "}
-              <span className="font-medium">{total}</span>
-            </p>
-          </div>
+  // Auto-scroll to venues section when search results load (only from hero)
+  useEffect(() => {
+    if (q && !loading && sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [q, loading]);
 
-          {/* Sort control */}
-          <label className="flex items-center gap-2 text-sm">
-            <span className="text-text/70">Sort by</span>
-            <select
-              value={sortId}
-              onChange={(e) => setSortId(e.target.value as SortId)}
-              className="rounded-lg border border-text/20 bg-background-lightest px-3 py-2"
-              aria-label="Sort venues"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+  return (
+    <section id="venues" ref={sectionRef} aria-labelledby="venues-heading" className="bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <VenuesSearchFilter 
+          sortId={sortId}
+          setSortId={setSortId}
+          total={total}
+          pageItemsLength={pageItems.length}
+        />
 
         {loading ? (
-          <div className="p-6">Loading venues…</div>
+          <VenuesGridSkeleton />
         ) : error ? (
-          <div className="p-6 text-red-700">Failed to load venues: {error}</div>
+          <div className="p-6 text-center">
+            <p className="text-red-600 mb-4">Unable to load venues</p>
+            <p className="text-text/70 text-sm mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Try Again
+            </button>
+          </div>
         ) : total === 0 ? (
           <div className="p-6">No venues found.</div>
         ) : (
@@ -202,7 +208,7 @@ export default function VenuesGrid() {
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {pageItems.map((v) => (
                 <VenueCard
-                  key={(v as unknown as { id: string }).id}
+                  key={v.id}
                   venue={v}
                 />
               ))}

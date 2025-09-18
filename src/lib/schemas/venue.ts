@@ -27,11 +27,11 @@ export const VenueSchema = z.object({
   name: z.string(),
   description: z.string(),
   media: z.array(MediaSchema).default([]),
-  price: z.number(),
-  maxGuests: z.number(),
+  price: z.number().min(0),
+  maxGuests: z.number().min(1),
   rating: z.number().nullable().optional(), // ✅ allow null
-  created: z.string(),
-  updated: z.string(),
+  created: z.string().datetime(),
+  updated: z.string().datetime(),
   meta: MetaSchema.optional(),
   location: LocationSchema.optional(),
 });
@@ -58,3 +58,4 @@ export const VenueSingleResponseSchema = z.object({
 
 export type Venue = z.infer<typeof VenueSchema>;
 export type VenueListResponse = z.infer<typeof VenueListResponseSchema>;
+export type VenueSingleResponse = z.infer<typeof VenueSingleResponseSchema>;

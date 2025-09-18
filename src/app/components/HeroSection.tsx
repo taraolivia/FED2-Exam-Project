@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import SearchField from "./SearchFieldHero";
+import SearchFieldHero from "./SearchFieldHero";
 
 export default function HeroSection() {
   return (
@@ -9,14 +9,16 @@ export default function HeroSection() {
       style={{ backgroundImage: "url('/hero-image-deer.jpg')" }}
       aria-label="Hero"
     >
-      <SearchField />
+      <div className="flex-1 flex items-center justify-center">
+        <SearchFieldHero />
+      </div>
 
       {/* logo/tekst nederst */}
-      <div className="mx-auto w-fit mt-auto">
+      <div className="mx-auto w-fit">
         <Image
           aria-hidden
           src="/holidaze-logo-white.png"
-          alt="Globe icon"
+          alt="Holidaze logo"
           width={600}
           height={300}
         />

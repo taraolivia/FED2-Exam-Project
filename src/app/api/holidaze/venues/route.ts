@@ -7,30 +7,28 @@ import { fetchJSON } from "@/lib/api/http";
 // import { VenueListResponseSchema } from "../../lib/schemas/venue";
 import { VenueListResponseSchema } from "@/lib/schemas/venue";
 
+function parseVenueParams(searchParams: URLSearchParams) {
+  const page = searchParams.get("page");
+  const limit = searchParams.get("limit");
+  
+  const pageNum = page ? parseInt(page, 10) : undefined;
+  const limitNum = limit ? parseInt(limit, 10) : undefined;
+  
+  return {
+    page: pageNum && !Number.isNaN(pageNum) && pageNum > 0 ? pageNum : undefined,
+    limit: limitNum && !Number.isNaN(limitNum) && limitNum > 0 ? limitNum : undefined,
+    _owner: searchParams.get("_owner") === "true" ? true : undefined,
+    _bookings: searchParams.get("_bookings") === "true" ? true : undefined,
+  };
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-
     const q = searchParams.get("q") ?? undefined;
-    const page = searchParams.get("page");
-    const limit = searchParams.get("limit");
-    const _owner = searchParams.get("_owner") === "true" ? true : undefined;
-    const _bookings =
-      searchParams.get("_bookings") === "true" ? true : undefined;
+    const params = parseVenueParams(searchParams);
 
-    const url = q
-      ? ep.search(q, {
-          page: page ? Number(page) : undefined,
-          limit: limit ? Number(limit) : undefined,
-          _owner,
-          _bookings,
-        })
-      : ep.list({
-          page: page ? Number(page) : undefined,
-          limit: limit ? Number(limit) : undefined,
-          _owner,
-          _bookings,
-        });
+    const url = q ? ep.search(q, params) : ep.list(params);
 
     // Public list/single endpoints don’t require auth headers.
     const json = await fetchJSON<unknown>(url);
@@ -39,9 +37,14 @@ export async function GET(req: Request) {
     const parsed = VenueListResponseSchema.parse(json);
 
     return NextResponse.json(parsed);
-  } catch (err: any) {
-    const status = err?.status ?? 500;
-    const message = err?.message ?? "Failed to load venues";
+  } catch (err: unknown) {
+    // Check if it's a URL or validation error (client error)
+    if (err instanceof TypeError || (err instanceof Error && err.message?.includes('Invalid URL'))) {
+      return NextResponse.json({ error: "Invalid request parameters" }, { status: 400 });
+    }
+    
+    const status = (err as any)?.status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to load venues";
     return NextResponse.json({ error: message }, { status });
   }
 }
