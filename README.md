@@ -66,8 +66,10 @@ A modern, full-stack booking platform built with Next.js, allowing users to disc
 3. **Set up environment variables**
    ```bash
    # Create .env.local file
-   NEXT_PUBLIC_NOROFF_API_KEY=f865147e-3aca-4fb0-9988-9a2df47563d1
+   NEXT_PUBLIC_NOROFF_API_KEY=your_noroff_api_key_here
    ```
+   
+   Get your API key from the [Noroff API documentation](https://docs.noroff.dev/docs/v2)
 
 4. **Run development server**
    ```bash
