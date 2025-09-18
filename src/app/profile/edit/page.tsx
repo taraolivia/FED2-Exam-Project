@@ -26,7 +26,7 @@ export default function EditProfilePage() {
     setSuccess(false);
 
     const formData = new FormData(e.currentTarget);
-    
+
     const avatarUrl = formData.get("avatarUrl") as string;
     const avatarAlt = formData.get("avatarAlt") as string;
     const bannerUrl = formData.get("bannerUrl") as string;
@@ -35,7 +35,7 @@ export default function EditProfilePage() {
     const venueManager = formData.get("venueManager") === "on";
 
     const updateData: any = {};
-    
+
     if (bio.trim()) updateData.bio = bio.trim();
     if (avatarUrl.trim()) {
       updateData.avatar = {
@@ -61,23 +61,29 @@ export default function EditProfilePage() {
     }
 
     try {
-      const response = await updateProfile(user.name, updateData, user.accessToken);
-      
+      const response = await updateProfile(
+        user.name,
+        updateData,
+        user.accessToken,
+      );
+
       // Update user context with new data
       setUser({
         ...user,
         ...response.data,
         accessToken: user.accessToken, // Keep the token
       });
-      
+
       setSuccess(true);
       setTimeout(() => router.push("/profile"), 2000);
     } catch (err) {
-      console.error('Failed to update profile:', err);
+      console.error("Failed to update profile:", err);
       if (err instanceof Error) {
-        if (err.message.includes('avatar') || err.message.includes('banner')) {
-          setError("Invalid image URL. Please provide a valid, publicly accessible image URL.");
-        } else if (err.message.includes('bio')) {
+        if (err.message.includes("avatar") || err.message.includes("banner")) {
+          setError(
+            "Invalid image URL. Please provide a valid, publicly accessible image URL.",
+          );
+        } else if (err.message.includes("bio")) {
           setError("Bio is too long. Please keep it under 160 characters.");
         } else {
           setError(err.message);
@@ -112,7 +118,7 @@ export default function EditProfilePage() {
 
           <div className="bg-background-lighter rounded-lg p-6">
             <h3 className="font-heading text-lg mb-4">Basic Information</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Name</label>
@@ -122,7 +128,9 @@ export default function EditProfilePage() {
                   disabled
                   className="w-full px-3 py-2 border border-text/20 rounded-lg bg-text/5 text-text/70"
                 />
-                <p className="text-xs text-text/60 mt-1">Username cannot be changed</p>
+                <p className="text-xs text-text/60 mt-1">
+                  Username cannot be changed
+                </p>
               </div>
 
               <div>
@@ -133,7 +141,9 @@ export default function EditProfilePage() {
                   disabled
                   className="w-full px-3 py-2 border border-text/20 rounded-lg bg-text/5 text-text/70"
                 />
-                <p className="text-xs text-text/60 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-text/60 mt-1">
+                  Email cannot be changed
+                </p>
               </div>
 
               <div>
@@ -154,10 +164,13 @@ export default function EditProfilePage() {
 
           <div className="bg-background-lighter rounded-lg p-6">
             <h3 className="font-heading text-lg mb-4">Avatar</h3>
-            
+
             <div className="space-y-4">
               <div>
-                <label htmlFor="avatarUrl" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="avatarUrl"
+                  className="block text-sm font-medium mb-1"
+                >
                   Avatar URL
                 </label>
                 <input
@@ -171,7 +184,10 @@ export default function EditProfilePage() {
               </div>
 
               <div>
-                <label htmlFor="avatarAlt" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="avatarAlt"
+                  className="block text-sm font-medium mb-1"
+                >
                   Avatar Alt Text (max 120 characters)
                 </label>
                 <input
@@ -189,10 +205,13 @@ export default function EditProfilePage() {
 
           <div className="bg-background-lighter rounded-lg p-6">
             <h3 className="font-heading text-lg mb-4">Banner</h3>
-            
+
             <div className="space-y-4">
               <div>
-                <label htmlFor="bannerUrl" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="bannerUrl"
+                  className="block text-sm font-medium mb-1"
+                >
                   Banner URL
                 </label>
                 <input
@@ -206,7 +225,10 @@ export default function EditProfilePage() {
               </div>
 
               <div>
-                <label htmlFor="bannerAlt" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="bannerAlt"
+                  className="block text-sm font-medium mb-1"
+                >
                   Banner Alt Text (max 120 characters)
                 </label>
                 <input
@@ -224,7 +246,7 @@ export default function EditProfilePage() {
 
           <div className="bg-background-lighter rounded-lg p-6">
             <h3 className="font-heading text-lg mb-4">Account Type</h3>
-            
+
             <label className="flex items-center">
               <input
                 type="checkbox"

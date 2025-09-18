@@ -20,17 +20,20 @@ export default function ProfilePage() {
 
   const loadProfile = async () => {
     if (!user) return;
-    
+
     try {
-      const res = await fetch(`https://v2.api.noroff.dev/holidaze/profiles/${user.name}`, {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`,
-          "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+      const res = await fetch(
+        `https://v2.api.noroff.dev/holidaze/profiles/${user.name}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+            "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+          },
         },
-      });
+      );
       const data = await res.json();
       setProfileData(data.data);
-      
+
       // Update user context with fresh data
       setUser({
         ...user,
@@ -39,7 +42,7 @@ export default function ProfilePage() {
         banner: data.data.banner,
       });
     } catch (err) {
-      console.error('Failed to load profile:', err);
+      console.error("Failed to load profile:", err);
     } finally {
       setLoading(false);
     }
@@ -94,31 +97,39 @@ export default function ProfilePage() {
             <div className="bg-background rounded-lg p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-heading text-xl">My Bookings</h2>
-                <Link href="/bookings" className="text-primary hover:underline text-sm">
+                <Link
+                  href="/bookings"
+                  className="text-primary hover:underline text-sm"
+                >
                   View all
                 </Link>
               </div>
               <p className="text-text/70">View and manage your bookings</p>
             </div>
-            
+
             <div className="bg-background rounded-lg p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-heading text-xl">My Venues</h2>
-                {(profileData?.venueManager || user.venueManager) ? (
-                  <Link href="/manage-venues" className="text-primary hover:underline text-sm">
+                {profileData?.venueManager || user.venueManager ? (
+                  <Link
+                    href="/manage-venues"
+                    className="text-primary hover:underline text-sm"
+                  >
                     Manage venues
                   </Link>
                 ) : (
-                  <Link href="/profile/edit" className="text-primary hover:underline text-sm">
+                  <Link
+                    href="/profile/edit"
+                    className="text-primary hover:underline text-sm"
+                  >
                     Become manager
                   </Link>
                 )}
               </div>
               <p className="text-text/70">
-                {(profileData?.venueManager || user.venueManager)
-                  ? "Create and manage your venues" 
-                  : "Become a venue manager to list properties"
-                }
+                {profileData?.venueManager || user.venueManager
+                  ? "Create and manage your venues"
+                  : "Become a venue manager to list properties"}
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getBookings, deleteBooking } from "@/lib/api/bookings";
 import type { Booking } from "@/lib/schemas/booking";
 import Image from "next/image";
@@ -25,26 +26,29 @@ export default function BookingsPage() {
 
   const loadBookings = async () => {
     if (!user) return;
-    
+
     try {
       const response = await getBookings(user.accessToken);
       setBookings(response.data);
     } catch (err) {
-      console.error('Failed to load bookings:', err);
-      setError("Unable to load your bookings. Please check your connection and try again.");
+      console.error("Failed to load bookings:", err);
+      setError(
+        "Unable to load your bookings. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteBooking = async (id: string) => {
-    if (!user || !confirm("Are you sure you want to cancel this booking?")) return;
+    if (!user || !confirm("Are you sure you want to cancel this booking?"))
+      return;
 
     try {
       await deleteBooking(id, user.accessToken);
-      setBookings(bookings.filter(b => b.id !== id));
+      setBookings(bookings.filter((b) => b.id !== id));
     } catch (err) {
-      console.error('Failed to cancel booking:', err);
+      console.error("Failed to cancel booking:", err);
       setError("Unable to cancel booking. Please try again.");
     }
   };
@@ -76,14 +80,17 @@ export default function BookingsPage() {
         {bookings.length === 0 ? (
           <div className="bg-background-lighter rounded-lg p-8 text-center">
             <p className="text-text/70 mb-4">No bookings yet</p>
-            <a href="/" className="text-primary hover:underline">
+            <Link href="/" className="text-primary hover:underline">
               Browse venues to make your first booking
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid gap-6">
             {bookings.map((booking) => (
-              <div key={booking.id} className="bg-background-lighter rounded-lg p-6">
+              <div
+                key={booking.id}
+                className="bg-background-lighter rounded-lg p-6"
+              >
                 <div className="flex gap-6">
                   {booking.venue?.media?.[0]?.url && (
                     <div className="relative w-32 h-24 bg-secondary-lighter rounded-lg overflow-hidden flex-shrink-0">
@@ -95,12 +102,12 @@ export default function BookingsPage() {
                       />
                     </div>
                   )}
-                  
+
                   <div className="flex-1">
                     <h3 className="font-heading text-xl mb-2">
                       {booking.venue?.name || "Venue"}
                     </h3>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                       <div>
                         <span className="text-text/70">Check-in:</span>
@@ -117,8 +124,14 @@ export default function BookingsPage() {
                       <div>
                         <span className="text-text/70">Total:</span>
                         <p className="font-medium">
-                          ${booking.venue?.price ? 
-                            booking.venue.price * Math.ceil((new Date(booking.dateTo).getTime() - new Date(booking.dateFrom).getTime()) / (1000 * 60 * 60 * 24))
+                          $
+                          {booking.venue?.price
+                            ? booking.venue.price *
+                              Math.ceil(
+                                (new Date(booking.dateTo).getTime() -
+                                  new Date(booking.dateFrom).getTime()) /
+                                  (1000 * 60 * 60 * 24),
+                              )
                             : "—"}
                         </p>
                       </div>
@@ -126,12 +139,12 @@ export default function BookingsPage() {
 
                     <div className="flex gap-2">
                       {booking.venue && (
-                        <a
+                        <Link
                           href={`/venues/${booking.venue.id}`}
                           className="text-primary hover:underline text-sm"
                         >
                           View venue
-                        </a>
+                        </Link>
                       )}
                       <button
                         onClick={() => handleDeleteBooking(booking.id)}

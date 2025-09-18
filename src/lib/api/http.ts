@@ -20,11 +20,11 @@ export async function fetchJSON<T>(
   // 204 No Content: return undefined as T to keep typing happy for deletes, etc.
   if (res.status === 204) return undefined as T;
 
-  let parsed: unknown = null;
+  let parsed: any = null;
   try {
     parsed = await res.json();
   } catch (error) {
-    console.warn('Failed to parse JSON response:', error);
+    console.warn("Failed to parse JSON response:", error);
     // Non-JSON response
   }
 

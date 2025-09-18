@@ -174,14 +174,19 @@ export default function VenuesGrid() {
   // Auto-scroll to venues section when search results load (only from hero)
   useEffect(() => {
     if (q && !loading && sectionRef.current) {
-      sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+      sectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [q, loading]);
 
   return (
-    <section id="venues" ref={sectionRef} aria-labelledby="venues-heading" className="bg-background">
+    <section
+      id="venues"
+      ref={sectionRef}
+      aria-labelledby="venues-heading"
+      className="bg-background"
+    >
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <VenuesSearchFilter 
+        <VenuesSearchFilter
           sortId={sortId}
           setSortId={setSortId}
           total={total}
@@ -207,10 +212,7 @@ export default function VenuesGrid() {
           <>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {pageItems.map((v) => (
-                <VenueCard
-                  key={v.id}
-                  venue={v}
-                />
+                <VenueCard key={v.id} venue={v} />
               ))}
             </div>
 

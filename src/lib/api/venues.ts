@@ -27,25 +27,35 @@ export type VenueCreateData = {
 };
 
 export async function createVenue(data: VenueCreateData, accessToken: string) {
-  return fetchJSON<VenueSingleResponse>(`https://v2.api.noroff.dev/holidaze/venues`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+  return fetchJSON<VenueSingleResponse>(
+    `https://v2.api.noroff.dev/holidaze/venues`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+  );
 }
 
-export async function updateVenue(id: string, data: Partial<VenueCreateData>, accessToken: string) {
-  return fetchJSON<VenueSingleResponse>(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+export async function updateVenue(
+  id: string,
+  data: Partial<VenueCreateData>,
+  accessToken: string,
+) {
+  return fetchJSON<VenueSingleResponse>(
+    `https://v2.api.noroff.dev/holidaze/venues/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+  );
 }
 
 export async function deleteVenue(id: string, accessToken: string) {
@@ -60,20 +70,23 @@ export async function deleteVenue(id: string, accessToken: string) {
 
 export async function getMyVenues(accessToken: string) {
   const username = getUsernameFromToken(accessToken);
-  return fetchJSON<VenueListResponse>(`https://v2.api.noroff.dev/holidaze/profiles/${username}/venues?_bookings=true&_customer=true`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+  return fetchJSON<VenueListResponse>(
+    `https://v2.api.noroff.dev/holidaze/profiles/${username}/venues?_bookings=true&_customer=true`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+      },
     },
-  });
+  );
 }
 
 // Helper to extract username from token (basic implementation)
 function getUsernameFromToken(token: string): string {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.name || payload.sub || '';
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.name || payload.sub || "";
   } catch {
-    return '';
+    return "";
   }
 }

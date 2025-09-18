@@ -10,13 +10,17 @@ import { VenueListResponseSchema } from "@/lib/schemas/venue";
 function parseVenueParams(searchParams: URLSearchParams) {
   const page = searchParams.get("page");
   const limit = searchParams.get("limit");
-  
+
   const pageNum = page ? parseInt(page, 10) : undefined;
   const limitNum = limit ? parseInt(limit, 10) : undefined;
-  
+
   return {
-    page: pageNum && !Number.isNaN(pageNum) && pageNum > 0 ? pageNum : undefined,
-    limit: limitNum && !Number.isNaN(limitNum) && limitNum > 0 ? limitNum : undefined,
+    page:
+      pageNum && !Number.isNaN(pageNum) && pageNum > 0 ? pageNum : undefined,
+    limit:
+      limitNum && !Number.isNaN(limitNum) && limitNum > 0
+        ? limitNum
+        : undefined,
     _owner: searchParams.get("_owner") === "true" ? true : undefined,
     _bookings: searchParams.get("_bookings") === "true" ? true : undefined,
   };
@@ -39,12 +43,19 @@ export async function GET(req: Request) {
     return NextResponse.json(parsed);
   } catch (err: unknown) {
     // Check if it's a URL or validation error (client error)
-    if (err instanceof TypeError || (err instanceof Error && err.message?.includes('Invalid URL'))) {
-      return NextResponse.json({ error: "Invalid request parameters" }, { status: 400 });
+    if (
+      err instanceof TypeError ||
+      (err instanceof Error && err.message?.includes("Invalid URL"))
+    ) {
+      return NextResponse.json(
+        { error: "Invalid request parameters" },
+        { status: 400 },
+      );
     }
-    
+
     const status = (err as any)?.status ?? 500;
-    const message = err instanceof Error ? err.message : "Failed to load venues";
+    const message =
+      err instanceof Error ? err.message : "Failed to load venues";
     return NextResponse.json({ error: message }, { status });
   }
 }

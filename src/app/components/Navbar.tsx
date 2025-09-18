@@ -15,11 +15,11 @@ export default function Navbar() {
   };
 
   const handleVenuesClick = (e: React.MouseEvent) => {
-    if (pathname === '/') {
+    if (pathname === "/") {
       e.preventDefault();
-      const venuesSection = document.getElementById('venues');
+      const venuesSection = document.getElementById("venues");
       if (venuesSection) {
-        venuesSection.scrollIntoView({ behavior: 'smooth' });
+        venuesSection.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -30,8 +30,8 @@ export default function Navbar() {
         <div className="grid grid-cols-3 items-center h-16">
           {/* Left - Navigation links */}
           <div className="flex items-center gap-6">
-            <Link 
-              href="/#venues" 
+            <Link
+              href="/#venues"
               onClick={handleVenuesClick}
               className="text-text hover:text-primary transition-colors"
             >
@@ -39,14 +39,14 @@ export default function Navbar() {
             </Link>
             {user && (
               <>
-                <Link 
+                <Link
                   href="/bookings"
                   className="text-text hover:text-primary transition-colors"
                 >
                   My Bookings
                 </Link>
                 {user.venueManager && (
-                  <Link 
+                  <Link
                     href="/manage-venues"
                     className="text-text hover:text-primary transition-colors"
                   >
@@ -74,10 +74,13 @@ export default function Navbar() {
           <div className="flex items-center gap-3 justify-end">
             {user ? (
               <div className="flex items-center gap-2">
-                <Link href="/profile" className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background transition-colors">
+                <Link
+                  href="/profile"
+                  className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background transition-colors"
+                >
                   {user.name}
                 </Link>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="text-text/70 hover:text-text text-sm"
                 >
@@ -86,10 +89,16 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-text hover:text-primary transition-colors text-sm">
+                <Link
+                  href="/login"
+                  className="text-text hover:text-primary transition-colors text-sm"
+                >
                   Log in
                 </Link>
-                <Link href="/register" className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                <Link
+                  href="/register"
+                  className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                >
                   Sign up
                 </Link>
               </>

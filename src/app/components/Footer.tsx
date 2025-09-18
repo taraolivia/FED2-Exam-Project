@@ -15,11 +15,11 @@ export default function Footer() {
   };
 
   const handleVenuesClick = (e: React.MouseEvent) => {
-    if (pathname === '/') {
+    if (pathname === "/") {
       e.preventDefault();
-      const venuesSection = document.getElementById('venues');
+      const venuesSection = document.getElementById("venues");
       if (venuesSection) {
-        venuesSection.scrollIntoView({ behavior: 'smooth' });
+        venuesSection.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -30,8 +30,8 @@ export default function Footer() {
         <div className="grid grid-cols-3 items-center h-16 mb-6">
           {/* Left - Venues link */}
           <div>
-            <Link 
-              href="/#venues" 
+            <Link
+              href="/#venues"
               onClick={handleVenuesClick}
               className="text-accent-darkest hover:text-accent transition-colors"
             >
@@ -59,7 +59,7 @@ export default function Footer() {
                 <div className="bg-background-lighter px-3 py-1 rounded-lg text-sm">
                   {user.name}
                 </div>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="text-accent-darkest/70 hover:text-accent-darkest text-sm"
                 >
@@ -68,10 +68,16 @@ export default function Footer() {
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-accent-darkest hover:text-accent transition-colors text-sm">
+                <Link
+                  href="/login"
+                  className="text-accent-darkest hover:text-accent transition-colors text-sm"
+                >
                   Log in
                 </Link>
-                <Link href="/register" className="bg-accent text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                <Link
+                  href="/register"
+                  className="bg-accent text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                >
                   Sign up
                 </Link>
               </>

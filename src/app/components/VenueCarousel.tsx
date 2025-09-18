@@ -48,11 +48,11 @@ export default function VenueCarousel() {
           u.searchParams.set("limit", "100");
           promises.push(
             fetch(u.toString(), { cache: "no-store" })
-              .then(r => r.json())
-              .catch(err => {
+              .then((r) => r.json())
+              .catch((err) => {
                 console.warn(`Failed to fetch page ${p}:`, err);
                 return { data: [] }; // Return empty data on error
-              })
+              }),
           );
         }
 
@@ -63,10 +63,10 @@ export default function VenueCarousel() {
         for (const v of allData) {
           if (v.id && !uniqueMap.has(v.id)) uniqueMap.set(v.id, v);
         }
-        
+
         // Sort by created date (newest first) and take top 3
         const sorted = sortVenuesByCreatedDate(Array.from(uniqueMap.values()));
-        
+
         setVenues(sorted.slice(0, 3));
       } catch (error) {
         console.error("Failed to fetch venues:", error);
@@ -142,8 +142,18 @@ export default function VenueCarousel() {
         className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors"
         aria-label="Previous venue"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
 
@@ -152,8 +162,18 @@ export default function VenueCarousel() {
         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors"
         aria-label="Next venue"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
 

@@ -30,45 +30,54 @@ export default function CreateVenuePage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    
+
     const mediaUrl = formData.get("mediaUrl") as string;
     const mediaAlt = formData.get("mediaAlt") as string;
 
     try {
-      await createVenue({
-        name: formData.get("name") as string,
-        description: formData.get("description") as string,
-        price: parseFloat(formData.get("price") as string),
-        maxGuests: parseInt(formData.get("maxGuests") as string),
-        rating: formData.get("rating") ? parseFloat(formData.get("rating") as string) : undefined,
-        media: mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "" }] : [],
-        meta: {
-          wifi: formData.get("wifi") === "on",
-          parking: formData.get("parking") === "on",
-          breakfast: formData.get("breakfast") === "on",
-          pets: formData.get("pets") === "on",
+      await createVenue(
+        {
+          name: formData.get("name") as string,
+          description: formData.get("description") as string,
+          price: parseFloat(formData.get("price") as string),
+          maxGuests: parseInt(formData.get("maxGuests") as string),
+          rating: formData.get("rating")
+            ? parseFloat(formData.get("rating") as string)
+            : undefined,
+          media: mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "" }] : [],
+          meta: {
+            wifi: formData.get("wifi") === "on",
+            parking: formData.get("parking") === "on",
+            breakfast: formData.get("breakfast") === "on",
+            pets: formData.get("pets") === "on",
+          },
+          location: {
+            address: (formData.get("address") as string) || undefined,
+            city: (formData.get("city") as string) || undefined,
+            zip: (formData.get("zip") as string) || undefined,
+            country: (formData.get("country") as string) || undefined,
+          },
         },
-        location: {
-          address: formData.get("address") as string || undefined,
-          city: formData.get("city") as string || undefined,
-          zip: formData.get("zip") as string || undefined,
-          country: formData.get("country") as string || undefined,
-        },
-      }, user.accessToken);
+        user.accessToken,
+      );
 
       router.push("/manage-venues");
     } catch (err) {
-      console.error('Failed to create venue:', err);
+      console.error("Failed to create venue:", err);
       if (err instanceof Error) {
-        if (err.message.includes('media')) {
-          setError("Invalid image URL. Please provide a valid, publicly accessible image URL.");
-        } else if (err.message.includes('price')) {
+        if (err.message.includes("media")) {
+          setError(
+            "Invalid image URL. Please provide a valid, publicly accessible image URL.",
+          );
+        } else if (err.message.includes("price")) {
           setError("Invalid price. Please enter a valid price.");
         } else {
           setError(err.message);
         }
       } else {
-        setError("Unable to create venue. Please check all fields and try again.");
+        setError(
+          "Unable to create venue. Please check all fields and try again.",
+        );
       }
     } finally {
       setLoading(false);
@@ -103,7 +112,10 @@ export default function CreateVenuePage() {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium mb-1"
+            >
               Description *
             </label>
             <textarea
@@ -132,7 +144,10 @@ export default function CreateVenuePage() {
             </div>
 
             <div>
-              <label htmlFor="maxGuests" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="maxGuests"
+                className="block text-sm font-medium mb-1"
+              >
                 Max Guests *
               </label>
               <input
@@ -146,7 +161,10 @@ export default function CreateVenuePage() {
             </div>
 
             <div>
-              <label htmlFor="rating" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="rating"
+                className="block text-sm font-medium mb-1"
+              >
                 Rating (0-5)
               </label>
               <input
@@ -163,7 +181,10 @@ export default function CreateVenuePage() {
           </div>
 
           <div>
-            <label htmlFor="mediaUrl" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="mediaUrl"
+              className="block text-sm font-medium mb-1"
+            >
               Image URL
             </label>
             <input
@@ -176,7 +197,10 @@ export default function CreateVenuePage() {
           </div>
 
           <div>
-            <label htmlFor="mediaAlt" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="mediaAlt"
+              className="block text-sm font-medium mb-1"
+            >
               Image Alt Text
             </label>
             <input

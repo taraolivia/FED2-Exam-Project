@@ -31,13 +31,15 @@ export default function ManageVenuesPage() {
 
   const loadVenues = async () => {
     if (!user) return;
-    
+
     try {
       const response = await getMyVenues(user.accessToken);
       setVenues(response.data);
     } catch (err) {
-      console.error('Failed to load venues:', err);
-      setError("Unable to load your venues. Please check your connection and try again.");
+      console.error("Failed to load venues:", err);
+      setError(
+        "Unable to load your venues. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -48,9 +50,9 @@ export default function ManageVenuesPage() {
 
     try {
       await deleteVenue(id, user.accessToken);
-      setVenues(venues.filter(v => v.id !== id));
+      setVenues(venues.filter((v) => v.id !== id));
     } catch (err) {
-      console.error('Failed to delete venue:', err);
+      console.error("Failed to delete venue:", err);
       setError("Unable to delete venue. Please try again.");
     }
   };
@@ -97,7 +99,10 @@ export default function ManageVenuesPage() {
         ) : (
           <div className="grid gap-6">
             {venues.map((venue) => (
-              <div key={venue.id} className="bg-background-lighter rounded-lg p-6">
+              <div
+                key={venue.id}
+                className="bg-background-lighter rounded-lg p-6"
+              >
                 <div className="flex gap-6">
                   {venue.media?.[0]?.url && (
                     <div className="relative w-32 h-24 bg-secondary-lighter rounded-lg overflow-hidden flex-shrink-0">
@@ -109,11 +114,13 @@ export default function ManageVenuesPage() {
                       />
                     </div>
                   )}
-                  
+
                   <div className="flex-1">
                     <h3 className="font-heading text-xl mb-2">{venue.name}</h3>
-                    <p className="text-text/70 mb-4 line-clamp-2">{venue.description}</p>
-                    
+                    <p className="text-text/70 mb-4 line-clamp-2">
+                      {venue.description}
+                    </p>
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                       <div>
                         <span className="text-text/70">Price:</span>
@@ -174,7 +181,9 @@ export default function ManageVenuesPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-heading text-xl">Bookings for {selectedVenue.name}</h3>
+              <h3 className="font-heading text-xl">
+                Bookings for {selectedVenue.name}
+              </h3>
               <button
                 onClick={() => setSelectedVenue(null)}
                 className="text-text/70 hover:text-text text-2xl"
@@ -182,14 +191,17 @@ export default function ManageVenuesPage() {
                 ×
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {(selectedVenue as any).bookings?.map((booking: any) => (
-                <div key={booking.id} className="bg-background-lighter rounded-lg p-4">
+                <div
+                  key={booking.id}
+                  className="bg-background-lighter rounded-lg p-4"
+                >
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
                       <span className="text-text/70">Guest:</span>
-                      <p>{booking.customer?.name || 'Unknown'}</p>
+                      <p>{booking.customer?.name || "Unknown"}</p>
                     </div>
                     <div>
                       <span className="text-text/70">Check-in:</span>
@@ -205,9 +217,7 @@ export default function ManageVenuesPage() {
                     </div>
                   </div>
                 </div>
-              )) || (
-                <p className="text-text/70">No bookings yet</p>
-              )}
+              )) || <p className="text-text/70">No bookings yet</p>}
             </div>
           </div>
         </div>

@@ -40,9 +40,10 @@ export async function login(data: LoginData): Promise<User> {
       try {
         const error = await res.json();
         const apiError = error.errors?.[0]?.message || "Login failed";
-        
-        if (apiError.includes('Invalid email or password')) {
-          errorMessage = "Invalid email or password. Make sure you're using your @stud.noroff.no email and correct password.";
+
+        if (apiError.includes("Invalid email or password")) {
+          errorMessage =
+            "Invalid email or password. Make sure you're using your @stud.noroff.no email and correct password.";
         } else {
           errorMessage = apiError;
         }
@@ -87,11 +88,13 @@ export async function register(data: RegisterData): Promise<void> {
       let errorMessage = "Registration failed";
       try {
         const error = await res.json();
-        console.error('Registration error:', error);
-        const apiError = error.errors?.[0]?.message || error.message || "Registration failed";
-        
-        if (apiError.includes('Profile already exists')) {
-          errorMessage = "This username or email is already taken. Please try a different one.";
+        console.error("Registration error:", error);
+        const apiError =
+          error.errors?.[0]?.message || error.message || "Registration failed";
+
+        if (apiError.includes("Profile already exists")) {
+          errorMessage =
+            "This username or email is already taken. Please try a different one.";
         } else {
           errorMessage = apiError;
         }

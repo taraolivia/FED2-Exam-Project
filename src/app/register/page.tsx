@@ -37,7 +37,7 @@ export default function RegisterPage() {
     }
 
     // Validate email domain
-    if (!email.toString().endsWith('@stud.noroff.no')) {
+    if (!email.toString().endsWith("@stud.noroff.no")) {
       setError("Email must be a @stud.noroff.no address");
       setLoading(false);
       return;
@@ -60,7 +60,12 @@ export default function RegisterPage() {
     const venueManager = formData.get("venueManager") === "on";
 
     try {
-      await register({ name: name as string, email: email as string, password: password as string, venueManager });
+      await register({
+        name: name as string,
+        email: email as string,
+        password: password as string,
+        venueManager,
+      });
       setSuccess(true);
       setTimeout(() => router.push("/login"), REDIRECT_DELAY);
     } catch (err) {
@@ -73,7 +78,7 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-background flex items-center justify-center pt-20">
       <div className="bg-background-lighter rounded-lg p-8 w-full max-w-md">
         <h1 className="font-heading text-2xl text-center mb-6">Sign up</h1>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -99,7 +104,7 @@ export default function RegisterPage() {
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email (must be @stud.noroff.no)
@@ -114,9 +119,12 @@ export default function RegisterPage() {
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password (minimum 8 characters)
             </label>
             <input
@@ -128,7 +136,7 @@ export default function RegisterPage() {
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -140,7 +148,7 @@ export default function RegisterPage() {
               I want to be a venue manager
             </label>
           </div>
-          
+
           <button
             type="submit"
             disabled={loading || success}
@@ -149,7 +157,7 @@ export default function RegisterPage() {
             {loading ? "Signing up..." : "Sign up"}
           </button>
         </form>
-        
+
         <p className="text-center text-sm text-text/70 mt-4">
           Already have an account?{" "}
           <Link href="/login" className="text-primary hover:underline">

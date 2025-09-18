@@ -22,7 +22,12 @@ type Props = {
   pageItemsLength: number;
 };
 
-export default function VenuesSearchFilter({ sortId, setSortId, total, pageItemsLength }: Props) {
+export default function VenuesSearchFilter({
+  sortId,
+  setSortId,
+  total,
+  pageItemsLength,
+}: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const q = searchParams.get("q") || undefined;
@@ -54,8 +59,17 @@ export default function VenuesSearchFilter({ sortId, setSortId, total, pageItems
           {/* Search bar */}
           <form onSubmit={handleSearch} className="my-4">
             <div className="relative max-w-md">
-              <input type="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search venues..." className="w-full rounded-lg border border-text/20 bg-background-lightest px-4 py-2 md:pr-50 pr-20" />
-              <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-primary px-3 py-1 text-sm text-accent-darkest hover:opacity-90">
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search venues..."
+                className="w-full rounded-lg border border-text/20 bg-background-lightest px-4 py-2 md:pr-50 pr-20"
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-primary px-3 py-1 text-sm text-accent-darkest hover:opacity-90"
+              >
                 Search
               </button>
             </div>
@@ -65,7 +79,12 @@ export default function VenuesSearchFilter({ sortId, setSortId, total, pageItems
         {/* Sort control */}
         <label className="flex items-center gap-2 text-sm my-4">
           <span className="text-text/70">Sort by</span>
-          <select value={sortId} onChange={(e) => setSortId(e.target.value as SortId)} className="rounded-lg border border-text/20 bg-background-lightest px-3 py-2" aria-label="Sort venues">
+          <select
+            value={sortId}
+            onChange={(e) => setSortId(e.target.value as SortId)}
+            className="rounded-lg border border-text/20 bg-background-lightest px-3 py-2"
+            aria-label="Sort venues"
+          >
             {SORT_OPTIONS.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
@@ -78,13 +97,17 @@ export default function VenuesSearchFilter({ sortId, setSortId, total, pageItems
         <div className="mt-2 flex items-center gap-2 text-sm">
           <span className="text-text/70">Search results for:</span>
           <span className="font-medium">"{q}"</span>
-          <button onClick={clearSearch} className="text-primary hover:underline">
+          <button
+            onClick={clearSearch}
+            className="text-primary hover:underline"
+          >
             Clear search
           </button>
         </div>
       )}
       <p className="mt-1 text-sm text-text/70">
-        Showing <span className="font-medium">{pageItemsLength}</span> of <span className="font-medium">{total}</span>
+        Showing <span className="font-medium">{pageItemsLength}</span> of{" "}
+        <span className="font-medium">{total}</span>
       </p>
     </div>
   );

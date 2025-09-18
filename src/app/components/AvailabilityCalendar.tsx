@@ -13,7 +13,10 @@ type Props = {
 
 export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [selectedDates, setSelectedDates] = useState<{ from?: string; to?: string }>({});
+  const [selectedDates, setSelectedDates] = useState<{
+    from?: string;
+    to?: string;
+  }>({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +29,9 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${venueId}?_bookings=true`);
+      const res = await fetch(
+        `https://v2.api.noroff.dev/holidaze/venues/${venueId}?_bookings=true`,
+      );
       if (!res.ok) throw new Error(`Failed to load availability`);
       const data = await res.json();
       setBookings(data.data.bookings || []);
@@ -39,10 +44,10 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   };
 
   const isDateBooked = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return bookings.some(booking => {
-      const from = new Date(booking.dateFrom).toISOString().split('T')[0];
-      const to = new Date(booking.dateTo).toISOString().split('T')[0];
+    const dateStr = date.toISOString().split("T")[0];
+    return bookings.some((booking) => {
+      const from = new Date(booking.dateFrom).toISOString().split("T")[0];
+      const to = new Date(booking.dateTo).toISOString().split("T")[0];
       return dateStr >= from && dateStr <= to;
     });
   };
@@ -56,7 +61,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   const handleDateClick = (date: Date) => {
     if (isDateBooked(date) || isDateInPast(date)) return;
 
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toISOString().split("T")[0];
 
     if (!selectedDates.from || (selectedDates.from && selectedDates.to)) {
       // Start new selection
@@ -80,30 +85,42 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
     const startingDayOfWeek = firstDay.getDay();
 
     const days = [];
-    
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-    
+
     return days;
   };
 
   const isDateSelected = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toISOString().split("T")[0];
     if (!selectedDates.from) return false;
     if (!selectedDates.to) return dateStr === selectedDates.from;
     return dateStr >= selectedDates.from && dateStr <= selectedDates.to;
   };
 
   const days = getDaysInMonth(currentMonth);
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   if (loading) {
     return (
@@ -140,7 +157,11 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
     <div className="bg-background-lighter rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
         <button
-          onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+          onClick={() =>
+            setCurrentMonth(
+              new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1),
+            )
+          }
           className="p-2 hover:bg-background rounded"
         >
           ←
@@ -149,7 +170,11 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h3>
         <button
-          onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+          onClick={() =>
+            setCurrentMonth(
+              new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
+            )
+          }
           className="p-2 hover:bg-background rounded"
         >
           →
@@ -157,8 +182,11 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center text-sm font-medium text-text/70 p-2">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div
+            key={day}
+            className="text-center text-sm font-medium text-text/70 p-2"
+          >
             {day}
           </div>
         ))}
@@ -181,10 +209,10 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
               disabled={isBooked || isPast}
               className={`
                 p-2 text-sm rounded transition-colors
-                ${isSelected ? 'bg-primary text-accent-darkest' : ''}
-                ${isBooked ? 'bg-red-100 text-red-400 cursor-not-allowed' : ''}
-                ${isPast ? 'text-text/30 cursor-not-allowed' : ''}
-                ${!isBooked && !isPast && !isSelected ? 'hover:bg-background' : ''}
+                ${isSelected ? "bg-primary text-accent-darkest" : ""}
+                ${isBooked ? "bg-red-100 text-red-400 cursor-not-allowed" : ""}
+                ${isPast ? "text-text/30 cursor-not-allowed" : ""}
+                ${!isBooked && !isPast && !isSelected ? "hover:bg-background" : ""}
               `}
             >
               {date.getDate()}
@@ -211,7 +239,8 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
       {selectedDates.from && selectedDates.to && (
         <div className="mt-4 p-3 bg-background rounded-lg">
           <p className="text-sm">
-            <strong>Selected:</strong> {selectedDates.from} to {selectedDates.to}
+            <strong>Selected:</strong> {selectedDates.from} to{" "}
+            {selectedDates.to}
           </p>
         </div>
       )}

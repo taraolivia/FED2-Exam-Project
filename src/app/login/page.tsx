@@ -25,7 +25,7 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email");
     const password = formData.get("password");
-    
+
     if (!email || !password) {
       setError("Email and password are required");
       setLoading(false);
@@ -33,7 +33,10 @@ export default function LoginPage() {
     }
 
     try {
-      const user = await login({ email: email as string, password: password as string });
+      const user = await login({
+        email: email as string,
+        password: password as string,
+      });
       setUser(user);
       router.push("/");
     } catch (err) {
@@ -46,7 +49,7 @@ export default function LoginPage() {
     <main className="min-h-screen bg-background flex items-center justify-center pt-20">
       <div className="bg-background-lighter rounded-lg p-8 w-full max-w-md">
         <h1 className="font-heading text-2xl text-center mb-6">Log in</h1>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -66,9 +69,12 @@ export default function LoginPage() {
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password
             </label>
             <input
@@ -79,7 +85,7 @@ export default function LoginPage() {
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -88,9 +94,9 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
-        
+
         <p className="text-center text-sm text-text/70 mt-4">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-primary hover:underline">
             Sign up
           </Link>

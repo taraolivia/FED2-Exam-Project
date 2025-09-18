@@ -28,11 +28,13 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
 
   const loadVenue = async () => {
     try {
-      const res = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${params.id}`);
+      const res = await fetch(
+        `https://v2.api.noroff.dev/holidaze/venues/${params.id}`,
+      );
       const data = await res.json();
       setVenue(data.data);
     } catch (err) {
-      console.error('Failed to load venue:', err);
+      console.error("Failed to load venue:", err);
       setError("Unable to load venue details. Please try again.");
     }
   };
@@ -45,43 +47,55 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    
+
     const mediaUrl = formData.get("mediaUrl") as string;
     const mediaAlt = formData.get("mediaAlt") as string;
 
     try {
-      await updateVenue(venue.id, {
-        name: formData.get("name") as string,
-        description: formData.get("description") as string,
-        price: parseFloat(formData.get("price") as string),
-        maxGuests: parseInt(formData.get("maxGuests") as string),
-        rating: formData.get("rating") ? parseFloat(formData.get("rating") as string) : venue.rating,
-        media: mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "" }] : venue.media,
-        meta: {
-          wifi: formData.get("wifi") === "on",
-          parking: formData.get("parking") === "on",
-          breakfast: formData.get("breakfast") === "on",
-          pets: formData.get("pets") === "on",
+      await updateVenue(
+        venue.id,
+        {
+          name: formData.get("name") as string,
+          description: formData.get("description") as string,
+          price: parseFloat(formData.get("price") as string),
+          maxGuests: parseInt(formData.get("maxGuests") as string),
+          rating: formData.get("rating")
+            ? parseFloat(formData.get("rating") as string)
+            : venue.rating || undefined,
+          media: mediaUrl
+            ? [{ url: mediaUrl, alt: mediaAlt || "" }]
+            : venue.media?.map((m) => ({ url: m.url, alt: m.alt || "" })),
+          meta: {
+            wifi: formData.get("wifi") === "on",
+            parking: formData.get("parking") === "on",
+            breakfast: formData.get("breakfast") === "on",
+            pets: formData.get("pets") === "on",
+          },
+          location: {
+            address: (formData.get("address") as string) || undefined,
+            city: (formData.get("city") as string) || undefined,
+            zip: (formData.get("zip") as string) || undefined,
+            country: (formData.get("country") as string) || undefined,
+          },
         },
-        location: {
-          address: formData.get("address") as string || undefined,
-          city: formData.get("city") as string || undefined,
-          zip: formData.get("zip") as string || undefined,
-          country: formData.get("country") as string || undefined,
-        },
-      }, user.accessToken);
+        user.accessToken,
+      );
 
       router.push("/manage-venues");
     } catch (err) {
-      console.error('Failed to update venue:', err);
+      console.error("Failed to update venue:", err);
       if (err instanceof Error) {
-        if (err.message.includes('media')) {
-          setError("Invalid image URL. Please provide a valid, publicly accessible image URL.");
+        if (err.message.includes("media")) {
+          setError(
+            "Invalid image URL. Please provide a valid, publicly accessible image URL.",
+          );
         } else {
           setError(err.message);
         }
       } else {
-        setError("Unable to update venue. Please check all fields and try again.");
+        setError(
+          "Unable to update venue. Please check all fields and try again.",
+        );
       }
     } finally {
       setLoading(false);
@@ -89,7 +103,12 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
   };
 
   if (!user || !user.venueManager) return null;
-  if (!venue) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+  if (!venue)
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        Loading...
+      </div>
+    );
 
   return (
     <main className="min-h-screen bg-background pt-20">
@@ -118,7 +137,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium mb-1"
+            >
               Description *
             </label>
             <textarea
@@ -149,7 +171,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label htmlFor="maxGuests" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="maxGuests"
+                className="block text-sm font-medium mb-1"
+              >
                 Max Guests *
               </label>
               <input
@@ -164,7 +189,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label htmlFor="rating" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="rating"
+                className="block text-sm font-medium mb-1"
+              >
                 Rating (0-5)
               </label>
               <input
@@ -181,7 +209,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
           </div>
 
           <div>
-            <label htmlFor="mediaUrl" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="mediaUrl"
+              className="block text-sm font-medium mb-1"
+            >
               Image URL
             </label>
             <input
@@ -195,7 +226,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
           </div>
 
           <div>
-            <label htmlFor="mediaAlt" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="mediaAlt"
+              className="block text-sm font-medium mb-1"
+            >
               Image Alt Text
             </label>
             <input
@@ -211,19 +245,39 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
             <h3 className="text-lg font-medium mb-3">Amenities</h3>
             <div className="grid grid-cols-2 gap-4">
               <label className="flex items-center">
-                <input type="checkbox" name="wifi" defaultChecked={venue.meta?.wifi} className="mr-2" />
+                <input
+                  type="checkbox"
+                  name="wifi"
+                  defaultChecked={venue.meta?.wifi}
+                  className="mr-2"
+                />
                 WiFi
               </label>
               <label className="flex items-center">
-                <input type="checkbox" name="parking" defaultChecked={venue.meta?.parking} className="mr-2" />
+                <input
+                  type="checkbox"
+                  name="parking"
+                  defaultChecked={venue.meta?.parking}
+                  className="mr-2"
+                />
                 Parking
               </label>
               <label className="flex items-center">
-                <input type="checkbox" name="breakfast" defaultChecked={venue.meta?.breakfast} className="mr-2" />
+                <input
+                  type="checkbox"
+                  name="breakfast"
+                  defaultChecked={venue.meta?.breakfast}
+                  className="mr-2"
+                />
                 Breakfast
               </label>
               <label className="flex items-center">
-                <input type="checkbox" name="pets" defaultChecked={venue.meta?.pets} className="mr-2" />
+                <input
+                  type="checkbox"
+                  name="pets"
+                  defaultChecked={venue.meta?.pets}
+                  className="mr-2"
+                />
                 Pets allowed
               </label>
             </div>

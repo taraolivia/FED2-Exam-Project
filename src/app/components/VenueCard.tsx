@@ -72,7 +72,9 @@ export default function VenueCard({ venue }: Props) {
                 </li>
               </ul>
 
-              <h4 className="font-heading text-lg tracking-wide text-white">{title}</h4>
+              <h4 className="font-heading text-lg tracking-wide text-white">
+                {title}
+              </h4>
               <div className="mt-1 h-px w-40 bg-white/60" />
               <p className="mt-1 text-sm text-white/80">{location}</p>
             </div>

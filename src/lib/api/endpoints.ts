@@ -16,7 +16,8 @@ export type VenueQueryOpts = {
 function applyCommonParams(url: URL, opts?: VenueQueryOpts) {
   if (!opts) return;
   if (opts.page !== undefined) url.searchParams.set("page", String(opts.page));
-  if (opts.limit !== undefined) url.searchParams.set("limit", String(opts.limit));
+  if (opts.limit !== undefined)
+    url.searchParams.set("limit", String(opts.limit));
   if (opts.sort) url.searchParams.set("sort", opts.sort);
   if (opts.sortOrder) url.searchParams.set("sortOrder", opts.sortOrder);
   if (opts._owner === true) url.searchParams.set("_owner", "true");
@@ -57,7 +58,8 @@ export type ProfileQueryOpts = {
 function applyProfileParams(url: URL, opts?: ProfileQueryOpts) {
   if (!opts) return;
   if (opts.page !== undefined) url.searchParams.set("page", String(opts.page));
-  if (opts.limit !== undefined) url.searchParams.set("limit", String(opts.limit));
+  if (opts.limit !== undefined)
+    url.searchParams.set("limit", String(opts.limit));
   if (opts._bookings === true) url.searchParams.set("_bookings", "true");
   if (opts._venues === true) url.searchParams.set("_venues", "true");
 }
@@ -98,7 +100,8 @@ export type BookingQueryOpts = {
 function applyBookingParams(url: URL, opts?: BookingQueryOpts) {
   if (!opts) return;
   if (opts.page !== undefined) url.searchParams.set("page", String(opts.page));
-  if (opts.limit !== undefined) url.searchParams.set("limit", String(opts.limit));
+  if (opts.limit !== undefined)
+    url.searchParams.set("limit", String(opts.limit));
   if (opts._venue === true) url.searchParams.set("_venue", "true");
   if (opts._customer === true) url.searchParams.set("_customer", "true");
 }

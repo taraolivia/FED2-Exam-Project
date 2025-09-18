@@ -12,20 +12,24 @@ export const ProfileSchema = z.object({
   avatar: MediaSchema.optional(),
   banner: MediaSchema.optional(),
   venueManager: z.boolean().default(false),
-  _count: z.object({
-    venues: z.number(),
-    bookings: z.number(),
-  }).optional(),
+  _count: z
+    .object({
+      venues: z.number(),
+      bookings: z.number(),
+    })
+    .optional(),
 });
 
-export const ProfileUpdateSchema = z.object({
-  bio: z.string().optional(),
-  avatar: MediaSchema.optional(),
-  banner: MediaSchema.optional(),
-  venueManager: z.boolean().optional(),
-}).refine(data => Object.keys(data).length > 0, {
-  message: "At least one field must be provided",
-});
+export const ProfileUpdateSchema = z
+  .object({
+    bio: z.string().optional(),
+    avatar: MediaSchema.optional(),
+    banner: MediaSchema.optional(),
+    venueManager: z.boolean().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided",
+  });
 
 export const ProfileListResponseSchema = z.object({
   data: z.array(ProfileSchema),

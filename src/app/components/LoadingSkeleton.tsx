@@ -4,14 +4,14 @@ export function VenueCarouselSkeleton() {
       <div className="relative h-full flex">
         {/* Left skeleton */}
         <div className="flex-1 h-full bg-gray-200 animate-pulse" />
-        
+
         {/* Center skeleton */}
         <div className="w-[850px] h-full bg-gray-300 animate-pulse" />
-        
+
         {/* Right skeleton */}
         <div className="flex-1 h-full bg-gray-200 animate-pulse" />
       </div>
-      
+
       {/* Title overlay skeleton */}
       <div className="absolute top-1/2 left-0 right-0 h-[120px] bg-accent-lightest/70 flex items-center justify-center z-10 transform -translate-y-1/2">
         <div className="h-12 w-64 bg-gray-300 animate-pulse rounded" />
@@ -42,7 +42,7 @@ export function VenuesGridSkeleton() {
         <div className="mb-4">
           <div className="h-10 w-64 bg-gray-200 animate-pulse rounded-lg" />
         </div>
-        
+
         {/* Header skeleton */}
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -51,7 +51,7 @@ export function VenuesGridSkeleton() {
           </div>
           <div className="h-10 w-48 bg-gray-200 animate-pulse rounded-lg" />
         </div>
-        
+
         {/* Grid skeleton */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(24)].map((_, i) => (
