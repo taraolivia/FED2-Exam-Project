@@ -20,6 +20,10 @@ type Props = {
   };
 };
 
+/**
+ * Interactive map component showing venue location
+ * @param venue - Venue with location data
+ */
 export default function VenueMap({ venue }: Props) {
   const [coordinates, setCoordinates] = useState<{
     lat: number;

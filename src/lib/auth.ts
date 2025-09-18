@@ -27,6 +27,12 @@ export type User = {
   venueManager?: boolean;
 };
 
+/**
+ * Authenticates user with email and password
+ * @param data - User login credentials
+ * @returns Promise resolving to authenticated user data
+ * @throws Error if login fails
+ */
 export async function login(data: LoginData): Promise<User> {
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
@@ -76,6 +82,11 @@ export async function login(data: LoginData): Promise<User> {
   }
 }
 
+/**
+ * Registers a new user account
+ * @param data - User registration data including name, email, password
+ * @throws Error if registration fails
+ */
 export async function register(data: RegisterData): Promise<void> {
   try {
     const res = await fetch(`${API_BASE}/auth/register`, {
@@ -111,12 +122,19 @@ export async function register(data: RegisterData): Promise<void> {
   }
 }
 
+/**
+ * Logs out current user by clearing stored data
+ */
 export function logout(): void {
   if (typeof window !== "undefined") {
     localStorage.removeItem("user");
   }
 }
 
+/**
+ * Retrieves stored user data from localStorage
+ * @returns User object if found, null otherwise
+ */
 export function getStoredUser(): User | null {
   if (typeof window === "undefined") return null;
   const stored = localStorage.getItem("user");

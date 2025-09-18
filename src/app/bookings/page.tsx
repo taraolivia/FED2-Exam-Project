@@ -79,9 +79,15 @@ export default function BookingsPage() {
 
         {bookings.length === 0 ? (
           <div className="bg-background-lighter rounded-lg p-8 text-center">
-            <p className="text-text/70 mb-4">No bookings yet</p>
-            <Link href="/" className="text-primary hover:underline">
-              Browse venues to make your first booking
+            <div className="mb-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                <span className="text-2xl">📋</span>
+              </div>
+              <h3 className="font-heading text-lg mb-2">No bookings yet</h3>
+              <p className="text-text/70 mb-4">Discover amazing places to stay</p>
+            </div>
+            <Link href="/" className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity inline-block">
+              Browse venues
             </Link>
           </div>
         ) : (

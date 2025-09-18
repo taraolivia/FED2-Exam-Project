@@ -11,6 +11,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -81,7 +82,8 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
         user.accessToken,
       );
 
-      router.push("/manage-venues");
+      setSuccess(true);
+      setTimeout(() => router.push("/manage-venues"), 2000);
     } catch (err) {
       console.error("Failed to update venue:", err);
       if (err instanceof Error) {
@@ -119,6 +121,12 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+              ✓ Venue updated successfully! Redirecting...
             </div>
           )}
 

@@ -26,6 +26,12 @@ export type VenueCreateData = {
   };
 };
 
+/**
+ * Creates a new venue
+ * @param data - Venue creation data
+ * @param accessToken - User authentication token
+ * @returns Promise resolving to created venue
+ */
 export async function createVenue(data: VenueCreateData, accessToken: string) {
   return fetchJSON<VenueSingleResponse>(
     `https://v2.api.noroff.dev/holidaze/venues`,
@@ -40,6 +46,13 @@ export async function createVenue(data: VenueCreateData, accessToken: string) {
   );
 }
 
+/**
+ * Updates an existing venue
+ * @param id - Venue ID to update
+ * @param data - Partial venue data to update
+ * @param accessToken - User authentication token
+ * @returns Promise resolving to updated venue
+ */
 export async function updateVenue(
   id: string,
   data: Partial<VenueCreateData>,
@@ -58,6 +71,11 @@ export async function updateVenue(
   );
 }
 
+/**
+ * Deletes a venue
+ * @param id - Venue ID to delete
+ * @param accessToken - User authentication token
+ */
 export async function deleteVenue(id: string, accessToken: string) {
   return fetchJSON(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
     method: "DELETE",
@@ -68,6 +86,11 @@ export async function deleteVenue(id: string, accessToken: string) {
   });
 }
 
+/**
+ * Fetches current user's venues with bookings
+ * @param accessToken - User authentication token
+ * @returns Promise resolving to user's venues
+ */
 export async function getMyVenues(accessToken: string) {
   const username = getUsernameFromToken(accessToken);
   return fetchJSON<VenueListResponse>(
@@ -81,7 +104,11 @@ export async function getMyVenues(accessToken: string) {
   );
 }
 
-// Helper to extract username from token (basic implementation)
+/**
+ * Extracts username from JWT token
+ * @param token - JWT access token
+ * @returns Username from token payload
+ */
 function getUsernameFromToken(token: string): string {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));

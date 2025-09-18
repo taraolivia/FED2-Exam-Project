@@ -9,6 +9,7 @@ export default function CreateVenuePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -61,7 +62,8 @@ export default function CreateVenuePage() {
         user.accessToken,
       );
 
-      router.push("/manage-venues");
+      setSuccess(true);
+      setTimeout(() => router.push("/manage-venues"), 2000);
     } catch (err) {
       console.error("Failed to create venue:", err);
       if (err instanceof Error) {
@@ -98,6 +100,12 @@ export default function CreateVenuePage() {
             </div>
           )}
 
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+              ✓ Venue created successfully! Redirecting to your venues...
+            </div>
+          )}
+
           <div>
             <label htmlFor="name" className="block text-sm font-medium mb-1">
               Venue Name *
@@ -107,6 +115,7 @@ export default function CreateVenuePage() {
               id="name"
               name="name"
               required
+              placeholder="Enter venue name"
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
@@ -123,6 +132,7 @@ export default function CreateVenuePage() {
               name="description"
               rows={4}
               required
+              placeholder="Describe your venue, amenities, and what makes it special..."
               className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>

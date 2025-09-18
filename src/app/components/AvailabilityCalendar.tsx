@@ -11,6 +11,11 @@ type Props = {
   onDateSelect?: (dateFrom: string, dateTo: string) => void;
 };
 
+/**
+ * Interactive calendar showing venue availability and booking dates
+ * @param venueId - ID of venue to show availability for
+ * @param onDateSelect - Callback when date range is selected
+ */
 export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedDates, setSelectedDates] = useState<{

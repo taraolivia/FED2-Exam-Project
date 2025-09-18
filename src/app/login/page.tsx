@@ -40,7 +40,18 @@ export default function LoginPage() {
       setUser(user);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      console.error('Login error:', err);
+      if (err instanceof Error) {
+        if (err.message.includes('Invalid login credentials')) {
+          setError("Invalid email or password. Please check your credentials and try again.");
+        } else if (err.message.includes('email')) {
+          setError("Please enter a valid @stud.noroff.no email address.");
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError("Unable to log in. Please check your internet connection and try again.");
+      }
     } finally {
       setLoading(false);
     }

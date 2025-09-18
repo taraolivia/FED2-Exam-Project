@@ -4,6 +4,10 @@ import type { Venue } from "@/lib/schemas/venue";
 
 type Props = { venue: Venue };
 
+/**
+ * Displays a venue card with image, name, price, and rating
+ * @param venue - Venue data to display
+ */
 export default function VenueCard({ venue }: Props) {
   const img = venue.media?.[0];
   const title = venue.name;

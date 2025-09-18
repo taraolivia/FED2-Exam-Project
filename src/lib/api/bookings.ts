@@ -6,6 +6,12 @@ import {
   BookingSingleResponse,
 } from "@/lib/schemas/booking";
 
+/**
+ * Creates a new booking for a venue
+ * @param data - Booking creation data
+ * @param accessToken - User authentication token
+ * @returns Promise resolving to created booking
+ */
 export async function createBooking(data: BookingCreate, accessToken: string) {
   return fetchJSON<BookingSingleResponse>(ep.create(), {
     method: "POST",
@@ -17,6 +23,11 @@ export async function createBooking(data: BookingCreate, accessToken: string) {
   });
 }
 
+/**
+ * Fetches current user's bookings with venue details
+ * @param accessToken - User authentication token
+ * @returns Promise resolving to user's bookings
+ */
 export async function getBookings(accessToken: string) {
   // Get username from token to fetch user's bookings
   const username = getUsernameFromToken(accessToken);
@@ -31,7 +42,11 @@ export async function getBookings(accessToken: string) {
   );
 }
 
-// Helper to extract username from token
+/**
+ * Extracts username from JWT token
+ * @param token - JWT access token
+ * @returns Username from token payload
+ */
 function getUsernameFromToken(token: string): string {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -41,6 +56,11 @@ function getUsernameFromToken(token: string): string {
   }
 }
 
+/**
+ * Cancels/deletes a booking
+ * @param id - Booking ID to delete
+ * @param accessToken - User authentication token
+ */
 export async function deleteBooking(id: string, accessToken: string) {
   return fetchJSON(ep.delete(id), {
     method: "DELETE",

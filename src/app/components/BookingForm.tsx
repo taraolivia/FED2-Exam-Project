@@ -153,7 +153,13 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
 
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-            Booking successful! Check your profile for details.
+            <div className="flex items-center">
+              <span className="mr-2">✓</span>
+              <div>
+                <p className="font-medium">Booking confirmed!</p>
+                <p className="text-sm">You can view your booking details in your profile.</p>
+              </div>
+            </div>
           </div>
         )}
 

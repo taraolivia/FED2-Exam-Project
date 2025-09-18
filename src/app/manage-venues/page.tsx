@@ -46,13 +46,18 @@ export default function ManageVenuesPage() {
   };
 
   const handleDeleteVenue = async (id: string, name: string) => {
-    if (!user || !confirm(`Are you sure you want to delete "${name}"?`)) return;
+    if (!user || !confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) return;
+
+    const originalVenues = [...venues];
+    // Optimistically remove from UI
+    setVenues(venues.filter((v) => v.id !== id));
 
     try {
       await deleteVenue(id, user.accessToken);
-      setVenues(venues.filter((v) => v.id !== id));
     } catch (err) {
       console.error("Failed to delete venue:", err);
+      // Restore venues on error
+      setVenues(originalVenues);
       setError("Unable to delete venue. Please try again.");
     }
   };
@@ -88,10 +93,16 @@ export default function ManageVenuesPage() {
 
         {venues.length === 0 ? (
           <div className="bg-background-lighter rounded-lg p-8 text-center">
-            <p className="text-text/70 mb-4">No venues yet</p>
+            <div className="mb-4">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🏨</span>
+              </div>
+              <h3 className="font-heading text-lg mb-2">No venues yet</h3>
+              <p className="text-text/70 mb-4">Start earning by listing your first property</p>
+            </div>
             <Link
               href="/manage-venues/create"
-              className="text-primary hover:underline"
+              className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity inline-block"
             >
               Create your first venue
             </Link>

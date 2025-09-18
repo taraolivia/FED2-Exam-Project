@@ -4,6 +4,13 @@ export type HttpError = {
   issues?: unknown;
 };
 
+/**
+ * Makes a JSON HTTP request with proper error handling
+ * @param input - URL or Request object
+ * @param init - Request configuration options
+ * @returns Promise resolving to parsed JSON response
+ * @throws HttpError with status and message on failure
+ */
 export async function fetchJSON<T>(
   input: string | URL | Request,
   init?: RequestInit,
