@@ -2,21 +2,10 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false },
-) as any;
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false },
-) as any;
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false },
-) as any;
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
+const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false,
-}) as any;
+  loading: () => <div className="h-64 bg-gray-200 animate-pulse rounded-lg" />,
+});
 
 type Props = {
   venue: {
@@ -32,32 +21,12 @@ type Props = {
 };
 
 export default function VenueMap({ venue }: Props) {
-  const [isClient, setIsClient] = useState(false);
   const [coordinates, setCoordinates] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const { location } = venue;
-
-  useEffect(() => {
-    setIsClient(true);
-    // Fix for default markers in Next.js
-    if (typeof window !== "undefined") {
-      import("leaflet").then((L: any) => {
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-          iconUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-          shadowUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-        });
-      });
-      require("leaflet/dist/leaflet.css");
-    }
-  }, []);
 
   useEffect(() => {
     async function getCoordinates() {
@@ -97,19 +66,16 @@ export default function VenueMap({ venue }: Props) {
       setLoading(false);
     }
 
-    if (isClient) {
-      getCoordinates();
-    }
-  }, [isClient, location]);
+    getCoordinates();
+  }, [location]);
 
   const hasExactCoordinates = location?.lat && location?.lng;
-
   const locationText =
     [location?.address, location?.city, location?.country]
       .filter(Boolean)
       .join(", ") || venue.name;
 
-  if (!isClient || loading || !coordinates) {
+  if (loading || !coordinates) {
     return (
       <div className="mt-6">
         <h3 className="font-heading text-lg mb-3">Location</h3>
@@ -132,27 +98,13 @@ export default function VenueMap({ venue }: Props) {
       </div>
 
       <div className="h-64 rounded-lg overflow-hidden border border-text/20">
-        <MapContainer
-          center={[coordinates.lat, coordinates.lng]}
+        <LeafletMap
+          lat={coordinates.lat}
+          lng={coordinates.lng}
           zoom={hasExactCoordinates ? 15 : 10}
-          style={{ height: "100%", width: "100%" }}
-          scrollWheelZoom={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <Marker position={[coordinates.lat, coordinates.lng]}>
-            <Popup>
-              <div className="text-center">
-                <strong>{venue.name}</strong>
-                {locationText && (
-                  <p className="text-sm text-gray-600 mt-1">{locationText}</p>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        </MapContainer>
+          venueName={venue.name}
+          locationText={locationText}
+        />
       </div>
     </div>
   );
