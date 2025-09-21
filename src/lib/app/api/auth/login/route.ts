@@ -3,7 +3,12 @@ import { auth as ep } from "@/lib/api/endpoints";
 import { fetchJSON } from "@/lib/api/http";
 
 export async function POST(req: Request) {
-  const body = await req.json(); // { email, password }
+  let body: any;
+  try {
+    body = await req.json(); // { email, password }
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 
   // Validate required fields
   if (!body.email || !body.password) {

@@ -63,7 +63,7 @@ export default function CreateVenuePage() {
       );
 
       setSuccess(true);
-      setTimeout(() => router.push("/manage-venues"), 2000);
+      setTimeout(() => router.push("/manage-venues"), 1500);
     } catch (err) {
       console.error("Failed to create venue:", err);
       if (err instanceof Error) {

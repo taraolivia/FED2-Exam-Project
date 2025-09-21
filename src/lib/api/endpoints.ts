@@ -1,5 +1,5 @@
 // lib/api/endpoints.ts
-const BASE = process.env.NOROFF_API_BASE ?? "https://v2.api.noroff.dev";
+const BASE = "https://v2.api.noroff.dev";
 
 export type VenueSortField = "name" | "created" | "price";
 export type SortOrder = "asc" | "desc";

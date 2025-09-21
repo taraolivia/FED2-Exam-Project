@@ -6,8 +6,17 @@ import VenueMap from "@/app/components/VenueMap";
 
 async function getVenue(id: string): Promise<Venue | null> {
   try {
-    const res = await fetch(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
+    const url = `https://v2.api.noroff.dev/holidaze/venues/${id}`;
+    const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
+    if (!apiKey) {
+      throw new Error('API key is required');
+    }
+    const headers: HeadersInit = {
+      'X-Noroff-API-Key': apiKey
+    };
+    const res = await fetch(url, {
       next: { revalidate: 3600 }, // Revalidate every hour
+      headers,
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -35,7 +44,7 @@ export default async function VenuePage({
       .join(", ") || "—";
 
   return (
-    <main className="min-h-screen bg-background pt-20">
+    <main className="min-h-screen bg-background pt-20 md:pt-32">
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Image */}
         <div className="relative aspect-[16/9] w-full bg-secondary-lighter rounded-lg overflow-hidden mb-6">

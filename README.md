@@ -106,8 +106,8 @@ A modern, full-stack booking platform built with Next.js, allowing users to disc
 - **Accent:** Charcoal (#534946)
 
 ### Typography
-- **Headings:** Serif font family
-- **Body:** Sans-serif system fonts
+- **Headings:** Marcellus (serif)
+- **Body:** Inter (sans-serif)
 
 ## 🏗️ Project Structure
 

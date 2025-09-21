@@ -1,6 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 type Booking = {
   dateFrom: string;
   dateTo: string;
@@ -34,15 +39,15 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(
-        `https://v2.api.noroff.dev/holidaze/venues/${venueId}?_bookings=true`,
-      );
+      const url = `https://v2.api.noroff.dev/holidaze/venues/${venueId}?_bookings=true`;
+
+      const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to load availability`);
       const data = await res.json();
       setBookings(data.data.bookings || []);
     } catch (err) {
       console.error("Failed to load bookings:", err);
-      setError("Unable to load availability. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to load availability");
     } finally {
       setLoading(false);
     }
@@ -112,20 +117,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   };
 
   const days = getDaysInMonth(currentMonth);
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+
 
   if (loading) {
     return (
@@ -172,7 +164,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
           ←
         </button>
         <h3 className="font-heading text-lg">
-          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h3>
         <button
           onClick={() =>

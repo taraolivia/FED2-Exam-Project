@@ -6,6 +6,7 @@ import { fetchJSON } from "@/lib/api/http";
 // If the alias gives you trouble, switch this import to:
 // import { VenueListResponseSchema } from "../../lib/schemas/venue";
 import { VenueListResponseSchema } from "@/lib/schemas/venue";
+import { ZodError } from "zod";
 
 function parseVenueParams(searchParams: URLSearchParams) {
   const page = searchParams.get("page");
@@ -42,7 +43,15 @@ export async function GET(req: Request) {
 
     return NextResponse.json(parsed);
   } catch (err: unknown) {
-    // Check if it's a URL or validation error (client error)
+    // Check if it's a validation error (client error)
+    if (err instanceof ZodError) {
+      return NextResponse.json(
+        { error: "Invalid response format" },
+        { status: 400 },
+      );
+    }
+    
+    // Check if it's a URL or network error
     if (
       err instanceof TypeError ||
       (err instanceof Error && err.message?.includes("Invalid URL"))
@@ -53,9 +62,12 @@ export async function GET(req: Request) {
       );
     }
 
-    const status = (err as any)?.status ?? 500;
-    const message =
-      err instanceof Error ? err.message : "Failed to load venues";
+    // Safe status extraction
+    const status = (err && typeof err === 'object' && 'status' in err && typeof err.status === 'number') 
+      ? err.status 
+      : 500;
+    // Don't expose internal error messages for server errors
+    const message = status >= 500 ? "Internal server error" : (err instanceof Error ? err.message : "Failed to load venues");
     return NextResponse.json({ error: message }, { status });
   }
 }

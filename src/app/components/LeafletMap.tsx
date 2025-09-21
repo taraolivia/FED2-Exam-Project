@@ -18,19 +18,29 @@ export default function LeafletMap({
   venueName,
   locationText,
 }: Props) {
+  // Validate coordinates
+  const isValidLat = lat >= -90 && lat <= 90;
+  const isValidLng = lng >= -180 && lng <= 180;
+  
+  if (!isValidLat || !isValidLng) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-gray-100">
+        <p className="text-gray-600">Invalid coordinates</p>
+      </div>
+    );
+  }
+
   useEffect(() => {
     // Fix for default markers
     if (typeof window !== "undefined") {
       const L = require("leaflet");
       delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-        iconUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-        shadowUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-      });
+      const ICON_URLS = {
+        iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+        iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+      };
+      L.Icon.Default.mergeOptions(ICON_URLS);
     }
   }, []);
 

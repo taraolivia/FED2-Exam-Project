@@ -7,6 +7,8 @@ import type { Venue } from "@/lib/schemas/venue";
 import Image from "next/image";
 import Link from "next/link";
 
+const SHIMMER_CLASSES = "bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]";
+
 export default function ManageVenuesPage() {
   const { user } = useUser();
   const router = useRouter();
@@ -37,9 +39,7 @@ export default function ManageVenuesPage() {
       setVenues(response.data);
     } catch (err) {
       console.error("Failed to load venues:", err);
-      setError(
-        "Unable to load your venues. Please check your connection and try again.",
-      );
+      setError("Unable to load your venues. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -58,14 +58,37 @@ export default function ManageVenuesPage() {
       console.error("Failed to delete venue:", err);
       // Restore venues on error
       setVenues(originalVenues);
-      setError("Unable to delete venue. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to delete venue");
     }
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center">
-        <div>Loading venues...</div>
+      <main className="min-h-screen bg-background pt-20 md:pt-32">
+        <div className="mx-auto max-w-6xl px-4 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <div className={`h-10 w-32 ${SHIMMER_CLASSES} rounded`} />
+            <div className={`h-10 w-32 ${SHIMMER_CLASSES} rounded`} />
+          </div>
+          <div className="grid gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-background-lighter rounded-xl p-6">
+                <div className="flex gap-6">
+                  <div className={`w-32 h-24 ${SHIMMER_CLASSES} rounded-lg`} />
+                  <div className="flex-1 space-y-3">
+                    <div className={`h-6 w-48 ${SHIMMER_CLASSES} rounded`} />
+                    <div className={`h-4 w-full ${SHIMMER_CLASSES} rounded`} />
+                    <div className="grid grid-cols-4 gap-4">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className={`h-4 w-16 ${SHIMMER_CLASSES} rounded`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
     );
   }
@@ -73,7 +96,7 @@ export default function ManageVenuesPage() {
   if (!user || !user.venueManager) return null;
 
   return (
-    <main className="min-h-screen bg-background pt-20">
+    <main className="min-h-screen bg-background pt-20 md:pt-32">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="font-heading text-3xl">My Venues</h1>
@@ -92,19 +115,17 @@ export default function ManageVenuesPage() {
         )}
 
         {venues.length === 0 ? (
-          <div className="bg-background-lighter rounded-lg p-8 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🏨</span>
-              </div>
-              <h3 className="font-heading text-lg mb-2">No venues yet</h3>
-              <p className="text-text/70 mb-4">Start earning by listing your first property</p>
+          <div className="bg-background-lighter rounded-xl p-12 text-center border border-text/10">
+            <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded opacity-60"></div>
             </div>
+            <h3 className="font-heading text-xl mb-3">No venues yet</h3>
+            <p className="text-text/60 mb-6 max-w-md mx-auto">Start earning by listing your first property and welcoming guests from around the world</p>
             <Link
               href="/manage-venues/create"
-              className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity inline-block"
+              className="bg-primary text-accent-darkest px-8 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 font-medium"
             >
-              Create your first venue
+              <span>+</span> Create your first venue
             </Link>
           </div>
         ) : (
@@ -112,7 +133,7 @@ export default function ManageVenuesPage() {
             {venues.map((venue) => (
               <div
                 key={venue.id}
-                className="bg-background-lighter rounded-lg p-6"
+                className="bg-background-lighter rounded-xl p-6 border border-text/10 hover:border-primary/30 transition-all duration-200"
               >
                 <div className="flex gap-6">
                   {venue.media?.[0]?.url && (
@@ -127,54 +148,50 @@ export default function ManageVenuesPage() {
                   )}
 
                   <div className="flex-1">
-                    <h3 className="font-heading text-xl mb-2">{venue.name}</h3>
-                    <p className="text-text/70 mb-4 line-clamp-2">
-                      {venue.description}
-                    </p>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-                      <div>
-                        <span className="text-text/70">Price:</span>
-                        <p>${venue.price}/night</p>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <Link href={`/venues/${venue.id}`} className="font-heading text-xl mb-2 hover:text-primary transition-colors block">
+                          {venue.name}
+                        </Link>
+                        <p className="text-text/60 text-sm line-clamp-3">
+                          {venue.description}
+                        </p>
                       </div>
-                      <div>
-                        <span className="text-text/70">Max guests:</span>
-                        <p>{venue.maxGuests}</p>
-                      </div>
-                      <div>
-                        <span className="text-text/70">Rating:</span>
-                        <p>{venue.rating ?? "—"}</p>
-                      </div>
-                      <div>
-                        <span className="text-text/70">Bookings:</span>
-                        <p>{(venue as any).bookings?.length ?? 0}</p>
+                      <div className="text-right ml-4">
+                        <p className="font-medium text-lg">${venue.price}<span className="text-sm text-text/60">/night</span></p>
+                        <p className="text-text/60 text-sm">{venue.maxGuests} guests max</p>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 flex-wrap">
-                      <Link
-                        href={`/venues/${venue.id}`}
-                        className="text-primary hover:underline text-sm"
-                      >
-                        View
-                      </Link>
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-4 bg-background rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-text/60">Rating:</span>
+                        <span>{venue.rating ?? "No rating"}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-text/60">Bookings:</span>
+                        <span>{venue.bookings?.length ?? 0} booking{(venue.bookings?.length ?? 0) !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 flex-wrap">
                       <Link
                         href={`/manage-venues/edit/${venue.id}`}
-                        className="text-primary hover:underline text-sm"
+                        className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
                       >
                         Edit
                       </Link>
-                      {(venue as any).bookings?.length > 0 && (
+                      {venue.bookings && venue.bookings.length > 0 && (
                         <button
                           onClick={() => setSelectedVenue(venue)}
-                          className="text-blue-600 hover:text-blue-800 text-sm"
+                          className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm hover:bg-blue-200 transition-colors"
                         >
-                          View Bookings ({(venue as any).bookings.length})
+                          View Bookings ({venue.bookings.length})
                         </button>
                       )}
                       <button
                         onClick={() => handleDeleteVenue(venue.id, venue.name)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="text-red-600 hover:text-red-800 text-sm px-2"
                       >
                         Delete
                       </button>
@@ -204,7 +221,7 @@ export default function ManageVenuesPage() {
             </div>
 
             <div className="space-y-4">
-              {(selectedVenue as any).bookings?.map((booking: any) => (
+              {selectedVenue.bookings?.map((booking) => (
                 <div
                   key={booking.id}
                   className="bg-background-lighter rounded-lg p-4"
@@ -228,7 +245,11 @@ export default function ManageVenuesPage() {
                     </div>
                   </div>
                 </div>
-              )) || <p className="text-text/70">No bookings yet</p>}
+              ))
+              }
+              {(!selectedVenue.bookings || selectedVenue.bookings.length === 0) && (
+                <p className="text-text/70">No bookings yet</p>
+              )}
             </div>
           </div>
         </div>

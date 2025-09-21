@@ -25,7 +25,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       <div className="bg-background-lighter rounded-lg p-6">
         <p className="text-center text-text/70">
           Please{" "}
-          <a href="/login" className="text-primary hover:underline">
+          <a href="/login" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
             log in
           </a>{" "}
           to make a booking
@@ -45,7 +45,13 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
     setSuccess(false);
 
     const formData = new FormData(e.currentTarget);
-    const guests = parseInt(formData.get("guests") as string);
+    const guestsValue = formData.get("guests") as string;
+    if (!guestsValue || guestsValue.trim() === '') {
+      setError("Please select number of guests");
+      setLoading(false);
+      return;
+    }
+    const guests = parseInt(guestsValue);
 
     if (!selectedDates.from || !selectedDates.to) {
       setError(
@@ -55,7 +61,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       return;
     }
 
-    if (!guests || guests < 1) {
+    if (!guests || guests < 1 || isNaN(guests)) {
       setError("Please enter the number of guests");
       setLoading(false);
       return;
@@ -91,21 +97,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       onBookingSuccess?.();
       (e.target as HTMLFormElement).reset();
     } catch (err) {
-      console.error("Booking error:", err);
-      if (err instanceof Error) {
-        // Handle specific API errors
-        if (err.message.includes("already booked")) {
-          setError(
-            "These dates are no longer available. Please select different dates.",
-          );
-        } else if (err.message.includes("Invalid date")) {
-          setError("Invalid dates selected. Please choose valid dates.");
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError("Unable to complete booking. Please try again.");
-      }
+      setError(err instanceof Error ? err.message : "Booking failed");
     } finally {
       setLoading(false);
     }
@@ -191,7 +183,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
             min="1"
             max={venue.maxGuests}
             required
-            className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
           />
         </div>
 
@@ -225,7 +217,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
         <button
           type="submit"
           disabled={loading || !selectedDates.from || !selectedDates.to}
-          className="w-full bg-primary text-accent-darkest py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 font-medium"
+          className="w-full bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed font-medium active:scale-[0.98]"
         >
           {loading
             ? "Booking..."

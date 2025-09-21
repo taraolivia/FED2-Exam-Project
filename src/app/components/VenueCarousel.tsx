@@ -24,8 +24,12 @@ export default function VenueCarousel() {
       try {
         // 1) Get page 1 to discover meta.pageCount
         const base = new URL("/api/holidaze/venues", window.location.origin);
+        if (base.hostname !== window.location.hostname) {
+          throw new Error('Invalid API endpoint');
+        }
         base.searchParams.set("page", "1");
         base.searchParams.set("limit", "100");
+
 
         const res = await fetch(base.toString(), { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -44,13 +48,18 @@ export default function VenueCarousel() {
         const promises = [];
         for (let p = 2; p <= pages; p++) {
           const u = new URL("/api/holidaze/venues", window.location.origin);
+          if (u.hostname !== window.location.hostname) {
+            throw new Error('Invalid API endpoint');
+          }
           u.searchParams.set("page", String(p));
           u.searchParams.set("limit", "100");
+
           promises.push(
             fetch(u.toString(), { cache: "no-store" })
               .then((r) => r.json())
               .catch((err) => {
-                console.warn(`Failed to fetch page ${p}:`, err);
+                const sanitizedError = err instanceof Error ? err.message.replace(/[\r\n]/g, ' ') : 'Unknown error';
+                console.warn(`Failed to fetch page ${p}:`, sanitizedError);
                 return { data: [] }; // Return empty data on error
               }),
           );
@@ -180,7 +189,7 @@ export default function VenueCarousel() {
       {/* Title overlay */}
       <div className="absolute top-1/2 left-0 right-0 h-[120px] bg-accent-lightest/70 flex items-center justify-center z-10 transform -translate-y-1/2">
         <Link href={`/venues/${currentVenue.id}`}>
-          <h2 className="font-heading text-[50px] text-accent-darkest text-center hover:text-accent transition-colors cursor-pointer">
+          <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[50px] text-accent-darkest text-center hover:text-accent transition-colors cursor-pointer">
             {currentVenue.name}
           </h2>
         </Link>

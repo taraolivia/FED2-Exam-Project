@@ -6,6 +6,8 @@ import { register } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
 const REDIRECT_DELAY = 2000;
+const INPUT_STYLES = "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
+const BUTTON_STYLES = "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,8 @@ export default function RegisterPage() {
     }
 
     const venueManager = formData.get("venueManager") === "on";
+    
+
 
     try {
       await register({
@@ -75,7 +79,7 @@ export default function RegisterPage() {
     }
   };
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center pt-20">
+    <main className="min-h-screen bg-background flex items-center justify-center pt-20 md:pt-32">
       <div className="bg-background-lighter rounded-lg p-8 w-full max-w-md">
         <h1 className="font-heading text-2xl text-center mb-6">Sign up</h1>
 
@@ -101,7 +105,7 @@ export default function RegisterPage() {
               pattern="[a-zA-Z0-9_]+"
               placeholder="my_username"
               required
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className={INPUT_STYLES}
             />
           </div>
 
@@ -116,7 +120,7 @@ export default function RegisterPage() {
               pattern=".*@stud\.noroff\.no$"
               placeholder="your.name@stud.noroff.no"
               required
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className={INPUT_STYLES}
             />
           </div>
 
@@ -133,7 +137,7 @@ export default function RegisterPage() {
               name="password"
               minLength={8}
               required
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className={INPUT_STYLES}
             />
           </div>
 
@@ -142,7 +146,7 @@ export default function RegisterPage() {
               type="checkbox"
               id="venueManager"
               name="venueManager"
-              className="mr-2"
+              className="mr-2 focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
             />
             <label htmlFor="venueManager" className="text-sm">
               I want to be a venue manager
@@ -152,7 +156,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading || success}
-            className="w-full bg-primary text-accent-darkest py-2 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className={BUTTON_STYLES}
           >
             {loading ? "Signing up..." : "Sign up"}
           </button>
@@ -160,7 +164,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-text/70 mt-4">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">
+          <Link href="/login" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
             Log in
           </Link>
         </p>

@@ -29,9 +29,13 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
 
   const loadVenue = async () => {
     try {
-      const res = await fetch(
-        `https://v2.api.noroff.dev/holidaze/venues/${params.id}`,
-      );
+      // Validate params.id to prevent SSRF
+      if (!params.id || !/^[a-zA-Z0-9-_]+$/.test(params.id)) {
+        throw new Error('Invalid venue ID');
+      }
+      const url = `https://v2.api.noroff.dev/holidaze/venues/${params.id}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch venue');
       const data = await res.json();
       setVenue(data.data);
     } catch (err) {
@@ -58,8 +62,16 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
         {
           name: formData.get("name") as string,
           description: formData.get("description") as string,
-          price: parseFloat(formData.get("price") as string),
-          maxGuests: parseInt(formData.get("maxGuests") as string),
+          price: (() => {
+            const price = parseFloat(formData.get("price") as string);
+            if (isNaN(price) || price < 0) throw new Error('Invalid price');
+            return price;
+          })(),
+          maxGuests: (() => {
+            const guests = parseInt(formData.get("maxGuests") as string);
+            if (isNaN(guests) || guests < 1) throw new Error('Invalid guest count');
+            return guests;
+          })(),
           rating: formData.get("rating")
             ? parseFloat(formData.get("rating") as string)
             : venue.rating || undefined,
@@ -92,7 +104,11 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
             "Invalid image URL. Please provide a valid, publicly accessible image URL.",
           );
         } else {
-          setError(err.message);
+          if (err instanceof Error && err.message.includes('400')) {
+        setError(err.message);
+      } else {
+        setError("Failed to update venue");
+      }
         }
       } else {
         setError(

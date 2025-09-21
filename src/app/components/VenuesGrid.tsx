@@ -15,6 +15,7 @@ type ApiMeta = {
 type ApiResponse = { data: Venue[]; meta: ApiMeta };
 
 const PAGE_SIZE = 24;
+const API_LIMIT = 100;
 
 // ---- Sort config
 type SortId = "alpha" | "new" | "priceDesc" | "priceAsc";
@@ -30,14 +31,6 @@ const SORT_OPTIONS: SortOption[] = [
   { id: "priceDesc", label: "Price: high → low" },
   { id: "priceAsc", label: "Price: low → high" },
 ];
-
-// Type guard for venue with required properties
-type VenueWithRequiredFields = Venue & {
-  name: string;
-  price: number;
-  created: string;
-  id: string;
-};
 
 // Safe accessors using proper typing
 function getName(v: Venue): string {
@@ -108,8 +101,9 @@ export default function VenuesGrid() {
 
         // 1) Get page 1 to discover meta.pageCount
         const base = new URL("/api/holidaze/venues", window.location.origin);
+
         base.searchParams.set("page", "1");
-        base.searchParams.set("limit", "100"); // larger page to reduce requests (tune if needed)
+        base.searchParams.set("limit", String(API_LIMIT));
         if (q) base.searchParams.set("q", q);
 
         const first = await fetchPage(base.toString(), ctrl.signal);
@@ -122,17 +116,31 @@ export default function VenuesGrid() {
           return;
         }
 
-        // 3) Fetch remaining pages concurrently
-        const promises: Promise<ApiResponse>[] = [];
-        for (let p = 2; p <= pages; p++) {
-          const u = new URL("/api/holidaze/venues", window.location.origin);
-          u.searchParams.set("page", String(p));
-          u.searchParams.set("limit", "100");
-          if (q) u.searchParams.set("q", q);
-          promises.push(fetchPage(u.toString(), ctrl.signal));
-        }
+        // 3) Fetch remaining pages with rate limiting (max 3 concurrent)
+        const rest: ApiResponse[] = [];
+        const BATCH_SIZE = 3;
+        
+        for (let i = 2; i <= pages; i += BATCH_SIZE) {
+          const batch: Promise<ApiResponse>[] = [];
+          const end = Math.min(i + BATCH_SIZE - 1, pages);
+          
+          for (let p = i; p <= end; p++) {
+            const u = new URL("/api/holidaze/venues", window.location.origin);
 
-        const rest = await Promise.all(promises);
+            u.searchParams.set("page", String(p));
+            u.searchParams.set("limit", String(API_LIMIT));
+            if (q) u.searchParams.set("q", q);
+            batch.push(fetchPage(u.toString(), ctrl.signal));
+          }
+          
+          const batchResults = await Promise.all(batch);
+          rest.push(...batchResults);
+          
+          // Small delay between batches to respect rate limits
+          if (i + BATCH_SIZE <= pages) {
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 100));
+          }
+        }
         // 4) Merge + de-dup by id
         const allData = [first, ...rest].flatMap((r) => r.data);
         const uniqueMap = new Map<string, Venue>();

@@ -14,7 +14,6 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -32,9 +31,7 @@ export default function BookingsPage() {
       setBookings(response.data);
     } catch (err) {
       console.error("Failed to load bookings:", err);
-      setError(
-        "Unable to load your bookings. Please check your connection and try again.",
-      );
+      setError("Unable to load your bookings. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -49,13 +46,13 @@ export default function BookingsPage() {
       setBookings(bookings.filter((b) => b.id !== id));
     } catch (err) {
       console.error("Failed to cancel booking:", err);
-      setError("Unable to cancel booking. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to cancel booking");
     }
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-background pt-20">
+      <main className="min-h-screen bg-background pt-20 md:pt-32">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <h1 className="font-heading text-3xl mb-8">My Bookings</h1>
           <BookingsSkeleton />
@@ -67,7 +64,7 @@ export default function BookingsPage() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-background pt-20">
+    <main className="min-h-screen bg-background pt-20 md:pt-32">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <h1 className="font-heading text-3xl mb-8">My Bookings</h1>
 

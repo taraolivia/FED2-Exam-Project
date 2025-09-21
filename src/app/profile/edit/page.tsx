@@ -10,12 +10,54 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [previewBio, setPreviewBio] = useState("");
+  const [previewVenueManager, setPreviewVenueManager] = useState(false);
+
 
   useEffect(() => {
     if (!user) {
       router.push("/login");
+      return;
     }
-  }, [user, router]);
+    
+    let mounted = true;
+    
+    const fetchProfile = async () => {
+      try {
+        const url = `https://v2.api.noroff.dev/holidaze/profiles/${user.name}`;
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+            "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
+          },
+        });
+        
+        if (res.ok && mounted) {
+          const profileData = await res.json();
+          setUser(prev => prev ? {
+            ...prev,
+            venueManager: profileData.data.venueManager,
+            bio: profileData.data.bio,
+            avatar: profileData.data.avatar,
+            banner: profileData.data.banner,
+          } : null);
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+    
+    fetchProfile();
+    return () => { mounted = false; };
+  }, [user?.name, user?.accessToken, router, setUser]);
+
+  // Update preview states when user data changes
+  useEffect(() => {
+    if (user) {
+      setPreviewBio(user.bio || "");
+      setPreviewVenueManager(user.venueManager || false);
+    }
+  }, [user?.bio, user?.venueManager]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,9 +76,15 @@ export default function EditProfilePage() {
     const bio = formData.get("bio") as string;
     const venueManager = formData.get("venueManager") === "on";
 
-    const updateData: any = {};
+    interface UpdateData {
+      bio?: string;
+      avatar?: { url: string; alt: string };
+      banner?: { url: string; alt: string };
+      venueManager?: boolean;
+    }
+    const updateData: UpdateData = {};
 
-    if (bio.trim()) updateData.bio = bio.trim();
+    if (bio !== null) updateData.bio = bio.trim();
     if (avatarUrl.trim()) {
       updateData.avatar = {
         url: avatarUrl.trim(),
@@ -75,22 +123,10 @@ export default function EditProfilePage() {
       });
 
       setSuccess(true);
-      setTimeout(() => router.push("/profile"), 2000);
+      setTimeout(() => router.push("/profile?refresh=edit"), 1500);
     } catch (err) {
       console.error("Failed to update profile:", err);
-      if (err instanceof Error) {
-        if (err.message.includes("avatar") || err.message.includes("banner")) {
-          setError(
-            "Invalid image URL. Please provide a valid, publicly accessible image URL.",
-          );
-        } else if (err.message.includes("bio")) {
-          setError("Bio is too long. Please keep it under 160 characters.");
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError("Unable to update profile. Please try again.");
-      }
+      setError("Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -99,9 +135,65 @@ export default function EditProfilePage() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-background pt-20">
+    <main className="min-h-screen bg-background pt-20 md:pt-32">
       <div className="mx-auto max-w-2xl px-4 py-8">
         <h1 className="font-heading text-3xl mb-8">Edit Profile</h1>
+
+        {/* Profile Preview */}
+        <div className="bg-background-lighter rounded-lg overflow-hidden mb-8">
+          <h2 className="font-heading text-xl p-6 pb-4">Preview</h2>
+          
+          {/* Banner */}
+          <div className="relative h-32 bg-secondary-lighter mx-6 rounded-lg overflow-hidden">
+            {user.banner?.url ? (
+              <img
+                src={user.banner.url}
+                alt={user.banner.alt || "Banner"}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-text/50">
+                No banner image
+              </div>
+            )}
+          </div>
+          
+          {/* Profile Info */}
+          <div className="p-6">
+            <div className="flex flex-col sm:flex-row items-start gap-6">
+              {user.avatar?.url ? (
+                <img
+                  src={user.avatar.url}
+                  alt={user.avatar.alt || user.name}
+                  className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
+                />
+              ) : (
+                <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto sm:mx-0">
+                  <span className="text-2xl font-heading text-accent-darkest">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 mb-2">
+                  <h3 className="font-heading text-2xl">{user.name}</h3>
+                  <span className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
+                    previewVenueManager 
+                      ? 'bg-primary/20 text-primary' 
+                      : 'bg-text/10 text-text/70'
+                  }`}>
+                    {previewVenueManager ? 'Venue Manager' : 'Customer'}
+                  </span>
+                </div>
+                <p className="text-text/70 mb-4">{user.email}</p>
+                {previewBio && (
+                  <p className="text-text/80">{previewBio}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
@@ -155,8 +247,10 @@ export default function EditProfilePage() {
                   name="bio"
                   maxLength={160}
                   rows={3}
+                  value={previewBio}
                   placeholder="Tell us about yourself..."
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  onChange={(e) => setPreviewBio(e.target.value)}
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
               </div>
             </div>
@@ -179,7 +273,7 @@ export default function EditProfilePage() {
                   name="avatarUrl"
                   defaultValue={user.avatar?.url || ""}
                   placeholder="https://example.com/avatar.jpg"
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
               </div>
 
@@ -251,13 +345,17 @@ export default function EditProfilePage() {
               <input
                 type="checkbox"
                 name="venueManager"
-                defaultChecked={user.venueManager}
-                className="mr-3"
+                defaultChecked={user.venueManager || false}
+                onChange={(e) => setPreviewVenueManager(e.target.checked)}
+                className="mr-3 focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
               />
               <div>
                 <span className="font-medium">Venue Manager</span>
                 <p className="text-sm text-text/70">
-                  Enable this to create and manage venue listings
+                  {user.venueManager 
+                    ? "You can create and manage venue listings" 
+                    : "Enable this to create and manage venue listings"
+                  }
                 </p>
               </div>
             </label>
@@ -267,14 +365,14 @@ export default function EditProfilePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background transition-colors"
+              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {loading ? "Updating..." : "Update Profile"}
             </button>

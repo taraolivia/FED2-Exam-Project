@@ -1,5 +1,13 @@
 const API_BASE = "https://v2.api.noroff.dev";
 
+export function validateApiKey(): string {
+  const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
+  if (!apiKey) {
+    throw new Error("API key not configured");
+  }
+  return apiKey;
+}
+
 export type LoginData = {
   email: string;
   password: string;
@@ -16,6 +24,7 @@ export type User = {
   name: string;
   email: string;
   accessToken: string;
+  bio?: string;
   avatar?: {
     url: string;
     alt?: string;
@@ -34,10 +43,15 @@ export type User = {
  * @throws Error if login fails
  */
 export async function login(data: LoginData): Promise<User> {
+  const apiKey = validateApiKey();
+  
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "X-Noroff-API-Key": apiKey,
+      },
       body: JSON.stringify(data),
     });
 
@@ -45,14 +59,7 @@ export async function login(data: LoginData): Promise<User> {
       let errorMessage = "Login failed";
       try {
         const error = await res.json();
-        const apiError = error.errors?.[0]?.message || "Login failed";
-
-        if (apiError.includes("Invalid email or password")) {
-          errorMessage =
-            "Invalid email or password. Make sure you're using your @stud.noroff.no email and correct password.";
-        } else {
-          errorMessage = apiError;
-        }
+        errorMessage = error.errors?.[0]?.message || "Login failed";
       } catch {
         // Ignore JSON parsing errors for error response
       }
@@ -64,9 +71,10 @@ export async function login(data: LoginData): Promise<User> {
       name: result.data.name,
       email: result.data.email,
       accessToken: result.data.accessToken,
-      avatar: result.data.avatar,
-      banner: result.data.banner,
-      venueManager: result.data.venueManager,
+      bio: result.data.bio || undefined,
+      avatar: result.data.avatar || undefined,
+      banner: result.data.banner || undefined,
+      venueManager: result.data.venueManager || false,
     };
 
     // Store in localStorage (client-side only)
@@ -88,10 +96,15 @@ export async function login(data: LoginData): Promise<User> {
  * @throws Error if registration fails
  */
 export async function register(data: RegisterData): Promise<void> {
+  const apiKey = validateApiKey();
+  
   try {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "X-Noroff-API-Key": apiKey,
+      },
       body: JSON.stringify(data),
     });
 
@@ -99,16 +112,7 @@ export async function register(data: RegisterData): Promise<void> {
       let errorMessage = "Registration failed";
       try {
         const error = await res.json();
-        console.error("Registration error:", error);
-        const apiError =
-          error.errors?.[0]?.message || error.message || "Registration failed";
-
-        if (apiError.includes("Profile already exists")) {
-          errorMessage =
-            "This username or email is already taken. Please try a different one.";
-        } else {
-          errorMessage = apiError;
-        }
+        errorMessage = error.errors?.[0]?.message || error.message || "Registration failed";
       } catch {
         // Ignore JSON parsing errors for error response
       }

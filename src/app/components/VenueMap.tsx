@@ -24,6 +24,8 @@ type Props = {
  * Interactive map component showing venue location
  * @param venue - Venue with location data
  */
+const FALLBACK_COORDINATES = { lat: 50.8503, lng: 4.3517 }; // Brussels, Belgium
+
 export default function VenueMap({ venue }: Props) {
   const [coordinates, setCoordinates] = useState<{
     lat: number;
@@ -47,25 +49,33 @@ export default function VenueMap({ venue }: Props) {
         .join(", ");
       if (query) {
         try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
-          );
+          const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+          const urlObj = new URL(url);
+          if (urlObj.hostname !== 'nominatim.openstreetmap.org') {
+            throw new Error('Invalid geocoding endpoint');
+          }
+          const response = await fetch(url);
           const data = await response.json();
           if (data[0]) {
-            setCoordinates({
-              lat: parseFloat(data[0].lat),
-              lng: parseFloat(data[0].lon),
-            });
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            
+            // Validate parsed coordinates
+            if (isNaN(lat) || isNaN(lng)) {
+              throw new Error('Invalid coordinates from geocoding');
+            }
+            
+            setCoordinates({ lat, lng });
           } else {
             // Fallback to center of Europe
-            setCoordinates({ lat: 50.8503, lng: 4.3517 });
+            setCoordinates(FALLBACK_COORDINATES);
           }
         } catch (error) {
           console.error("Geocoding failed:", error);
-          setCoordinates({ lat: 50.8503, lng: 4.3517 });
+          setCoordinates(FALLBACK_COORDINATES);
         }
       } else {
-        setCoordinates({ lat: 50.8503, lng: 4.3517 });
+        setCoordinates(FALLBACK_COORDINATES);
       }
       setLoading(false);
     }
@@ -101,7 +111,7 @@ export default function VenueMap({ venue }: Props) {
         )}
       </div>
 
-      <div className="h-64 rounded-lg overflow-hidden border border-text/20">
+      <div className="h-64 rounded-lg overflow-hidden border border-text/20 relative z-10">
         <LeafletMap
           lat={coordinates.lat}
           lng={coordinates.lng}
