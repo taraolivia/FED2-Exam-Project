@@ -7,9 +7,9 @@ import { useUser } from "@/lib/contexts/UserContext";
 import { useState } from "react";
 
 const HAMBURGER_TRANSFORMS = {
-  TOP_OPEN: 'rotate-45 translate-y-1',
-  MIDDLE_OPEN: 'opacity-0',
-  BOTTOM_OPEN: '-rotate-45 -translate-y-1'
+  TOP_OPEN: "rotate-45 translate-y-1",
+  MIDDLE_OPEN: "opacity-0",
+  BOTTOM_OPEN: "-rotate-45 -translate-y-1",
 };
 
 export default function Navbar() {
@@ -66,14 +66,6 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <>
-                  {user.venueManager && (
-                    <Link
-                      href="/manage-venues"
-                      className="text-text hover:text-primary focus:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded text-sm transition-colors duration-200"
-                    >
-                      Manage Venues
-                    </Link>
-                  )}
                   <Link
                     href="/profile"
                     className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200"
@@ -112,9 +104,15 @@ export default function Navbar() {
               aria-label="Toggle menu"
             >
               <div className="w-6 h-6 flex flex-col justify-center items-center">
-                <span className={`block w-5 h-0.5 bg-text transition-all ${isOpen ? HAMBURGER_TRANSFORMS.TOP_OPEN : ''}`} />
-                <span className={`block w-5 h-0.5 bg-text mt-1 transition-all ${isOpen ? HAMBURGER_TRANSFORMS.MIDDLE_OPEN : ''}`} />
-                <span className={`block w-5 h-0.5 bg-text mt-1 transition-all ${isOpen ? HAMBURGER_TRANSFORMS.BOTTOM_OPEN : ''}`} />
+                <span
+                  className={`block w-5 h-0.5 bg-text transition-all ${isOpen ? HAMBURGER_TRANSFORMS.TOP_OPEN : ""}`}
+                />
+                <span
+                  className={`block w-5 h-0.5 bg-text mt-1 transition-all ${isOpen ? HAMBURGER_TRANSFORMS.MIDDLE_OPEN : ""}`}
+                />
+                <span
+                  className={`block w-5 h-0.5 bg-text mt-1 transition-all ${isOpen ? HAMBURGER_TRANSFORMS.BOTTOM_OPEN : ""}`}
+                />
               </div>
             </button>
           </div>
@@ -143,15 +141,6 @@ export default function Navbar() {
                   >
                     Profile ({user.name})
                   </Link>
-                  {user.venueManager && (
-                    <Link
-                      href="/manage-venues"
-                      className="block text-text hover:text-primary transition-colors py-2"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Manage Venues
-                    </Link>
-                  )}
 
                   <button
                     onClick={() => {

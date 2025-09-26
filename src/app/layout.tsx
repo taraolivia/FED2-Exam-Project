@@ -19,8 +19,16 @@ const marcellus = Marcellus({
 });
 
 export const metadata: Metadata = {
-  title: "Holidaze",
-  description: "Beautiful venues in beautiful places",
+  title: "Holidaze - Venue Booking Platform",
+  description:
+    "Discover and book amazing accommodations worldwide. Modern booking platform for travelers and venue managers.",
+  keywords: "venue booking, accommodation, travel, hotels, vacation rentals",
+  authors: [{ name: "Tara Olivia Bjørheim" }],
+  openGraph: {
+    title: "Holidaze - Venue Booking Platform",
+    description: "Discover and book amazing accommodations worldwide",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

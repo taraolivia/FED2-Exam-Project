@@ -17,6 +17,15 @@ export type RegisterData = {
   name: string;
   email: string;
   password: string;
+  bio?: string;
+  avatar?: {
+    url: string;
+    alt?: string;
+  };
+  banner?: {
+    url: string;
+    alt?: string;
+  };
   venueManager?: boolean;
 };
 
@@ -44,11 +53,11 @@ export type User = {
  */
 export async function login(data: LoginData): Promise<User> {
   const apiKey = validateApiKey();
-  
+
   try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const res = await fetch(`${API_BASE}/auth/login?_holidaze=true`, {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         "X-Noroff-API-Key": apiKey,
       },
@@ -97,11 +106,11 @@ export async function login(data: LoginData): Promise<User> {
  */
 export async function register(data: RegisterData): Promise<void> {
   const apiKey = validateApiKey();
-  
+
   try {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         "X-Noroff-API-Key": apiKey,
       },
@@ -112,7 +121,8 @@ export async function register(data: RegisterData): Promise<void> {
       let errorMessage = "Registration failed";
       try {
         const error = await res.json();
-        errorMessage = error.errors?.[0]?.message || error.message || "Registration failed";
+        errorMessage =
+          error.errors?.[0]?.message || error.message || "Registration failed";
       } catch {
         // Ignore JSON parsing errors for error response
       }

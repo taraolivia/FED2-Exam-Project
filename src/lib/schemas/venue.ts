@@ -22,6 +22,28 @@ export const LocationSchema = z.object({
   lng: z.number().nullable().optional(), // ✅ allow null
 });
 
+const BookingSchema = z.object({
+  id: z.string(),
+  dateFrom: z.string().datetime(),
+  dateTo: z.string().datetime(),
+  guests: z.number().min(1),
+  created: z.string().datetime(),
+  updated: z.string().datetime(),
+  customer: z
+    .object({
+      name: z.string(),
+      email: z.string(),
+      avatar: z
+        .object({
+          url: z.string(),
+          alt: z.string().nullable().optional(),
+        })
+        .nullable()
+        .optional(),
+    })
+    .optional(),
+});
+
 export const VenueSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -34,6 +56,7 @@ export const VenueSchema = z.object({
   updated: z.string().datetime(),
   meta: MetaSchema.optional(),
   location: LocationSchema.optional(),
+  bookings: z.array(BookingSchema).optional(),
 });
 
 export const VenueListResponseSchema = z.object({

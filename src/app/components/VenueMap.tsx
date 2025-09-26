@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { ShimmerBox } from "./LoadingSkeleton";
 
 const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false,
-  loading: () => <div className="h-64 bg-gray-200 animate-pulse rounded-lg" />,
+  loading: () => <ShimmerBox className="h-64 rounded-lg" />,
 });
 
 type Props = {
@@ -51,27 +52,26 @@ export default function VenueMap({ venue }: Props) {
         try {
           const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
           const urlObj = new URL(url);
-          if (urlObj.hostname !== 'nominatim.openstreetmap.org') {
-            throw new Error('Invalid geocoding endpoint');
+          if (urlObj.hostname !== "nominatim.openstreetmap.org") {
+            throw new Error("Invalid geocoding endpoint");
           }
           const response = await fetch(url);
           const data = await response.json();
           if (data[0]) {
             const lat = parseFloat(data[0].lat);
             const lng = parseFloat(data[0].lon);
-            
+
             // Validate parsed coordinates
             if (isNaN(lat) || isNaN(lng)) {
-              throw new Error('Invalid coordinates from geocoding');
+              throw new Error("Invalid coordinates from geocoding");
             }
-            
+
             setCoordinates({ lat, lng });
           } else {
             // Fallback to center of Europe
             setCoordinates(FALLBACK_COORDINATES);
           }
-        } catch (error) {
-          console.error("Geocoding failed:", error);
+        } catch {
           setCoordinates(FALLBACK_COORDINATES);
         }
       } else {
@@ -93,7 +93,7 @@ export default function VenueMap({ venue }: Props) {
     return (
       <div className="mt-6">
         <h3 className="font-heading text-lg mb-3">Location</h3>
-        <div className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+        <ShimmerBox className="h-64 rounded-lg" />
       </div>
     );
   }

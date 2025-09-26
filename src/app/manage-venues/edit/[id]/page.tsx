@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { updateVenue } from "@/lib/api/venues";
@@ -25,24 +25,23 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
     }
 
     loadVenue();
-  }, [user, router]);
+  }, [user, router, loadVenue]);
 
-  const loadVenue = async () => {
+  const loadVenue = useCallback(async () => {
     try {
       // Validate params.id to prevent SSRF
       if (!params.id || !/^[a-zA-Z0-9-_]+$/.test(params.id)) {
-        throw new Error('Invalid venue ID');
+        throw new Error("Invalid venue ID");
       }
       const url = `https://v2.api.noroff.dev/holidaze/venues/${params.id}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch venue');
+      if (!res.ok) throw new Error("Failed to fetch venue");
       const data = await res.json();
       setVenue(data.data);
-    } catch (err) {
-      console.error("Failed to load venue:", err);
+    } catch {
       setError("Unable to load venue details. Please try again.");
     }
-  };
+  }, [params.id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,12 +63,13 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
           description: formData.get("description") as string,
           price: (() => {
             const price = parseFloat(formData.get("price") as string);
-            if (isNaN(price) || price < 0) throw new Error('Invalid price');
+            if (isNaN(price) || price < 0) throw new Error("Invalid price");
             return price;
           })(),
           maxGuests: (() => {
             const guests = parseInt(formData.get("maxGuests") as string);
-            if (isNaN(guests) || guests < 1) throw new Error('Invalid guest count');
+            if (isNaN(guests) || guests < 1)
+              throw new Error("Invalid guest count");
             return guests;
           })(),
           rating: formData.get("rating")
@@ -96,25 +96,10 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
 
       setSuccess(true);
       setTimeout(() => router.push("/manage-venues"), 2000);
-    } catch (err) {
-      console.error("Failed to update venue:", err);
-      if (err instanceof Error) {
-        if (err.message.includes("media")) {
-          setError(
-            "Invalid image URL. Please provide a valid, publicly accessible image URL.",
-          );
-        } else {
-          if (err instanceof Error && err.message.includes('400')) {
-        setError(err.message);
-      } else {
-        setError("Failed to update venue");
-      }
-        }
-      } else {
-        setError(
-          "Unable to update venue. Please check all fields and try again.",
-        );
-      }
+    } catch {
+      setError(
+        "Unable to update venue. Please check all fields and try again.",
+      );
     } finally {
       setLoading(false);
     }

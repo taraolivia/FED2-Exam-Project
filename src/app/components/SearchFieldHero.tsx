@@ -4,10 +4,10 @@ export default function SearchFieldHero() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const query = formData.get('q') as string;
+    const query = formData.get("q") as string;
     if (query?.trim()) {
-      const url = new URL('/', window.location.origin);
-      url.searchParams.set('q', query.trim());
+      const url = new URL("/", window.location.origin);
+      url.searchParams.set("q", query.trim());
       window.location.href = url.toString();
     }
   };

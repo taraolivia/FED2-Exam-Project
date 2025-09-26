@@ -25,7 +25,10 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       <div className="bg-background-lighter rounded-lg p-6">
         <p className="text-center text-text/70">
           Please{" "}
-          <a href="/login" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+          <a
+            href="/login"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+          >
             log in
           </a>{" "}
           to make a booking
@@ -46,7 +49,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
 
     const formData = new FormData(e.currentTarget);
     const guestsValue = formData.get("guests") as string;
-    if (!guestsValue || guestsValue.trim() === '') {
+    if (!guestsValue || guestsValue.trim() === "") {
       setError("Please select number of guests");
       setLoading(false);
       return;
@@ -96,8 +99,39 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       setSuccess(true);
       onBookingSuccess?.();
       (e.target as HTMLFormElement).reset();
+      
+      // Redirect to profile with refresh after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/profile?refresh=booking';
+      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Booking failed");
+      const errorMessage =
+        err instanceof Error ? err.message : "Booking failed";
+
+      // Handle specific API error messages
+      if (
+        errorMessage.includes("conflict") ||
+        errorMessage.includes("available") ||
+        errorMessage.includes("booked")
+      ) {
+        setError(
+          "Those dates are not available. Please choose different dates.",
+        );
+      } else if (
+        errorMessage.includes("guests") ||
+        errorMessage.includes("maxGuests")
+      ) {
+        setError(`Maximum ${venue.maxGuests} guests allowed for this venue.`);
+      } else if (
+        errorMessage.includes("date") ||
+        errorMessage.includes("invalid")
+      ) {
+        setError(
+          "Invalid dates selected. Please check your dates and try again.",
+        );
+      } else {
+        setError(errorMessage || "Booking failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -149,7 +183,9 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
               <span className="mr-2">✓</span>
               <div>
                 <p className="font-medium">Booking confirmed!</p>
-                <p className="text-sm">You can view your booking details in your profile.</p>
+                <p className="text-sm">
+                  You can view your booking details in your profile.
+                </p>
               </div>
             </div>
           </div>

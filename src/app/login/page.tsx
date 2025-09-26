@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
-const INPUT_STYLES = "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
-const BUTTON_STYLES = "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
+const INPUT_STYLES =
+  "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
+const BUTTON_STYLES =
+  "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ export default function LoginPage() {
       });
       setUser(user);
       router.push("/");
-    } catch (err) {
+    } catch {
       setError("Login failed. Please check your credentials and try again.");
     } finally {
       setLoading(false);
@@ -89,18 +91,17 @@ export default function LoginPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={BUTTON_STYLES}
-          >
+          <button type="submit" disabled={loading} className={BUTTON_STYLES}>
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
 
         <p className="text-center text-sm text-text/70 mt-4">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+          <Link
+            href="/register"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+          >
             Sign up
           </Link>
         </p>

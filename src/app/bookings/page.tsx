@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,21 +21,22 @@ export default function BookingsPage() {
     }
 
     loadBookings();
-  }, [user, router]);
+  }, [user, router, loadBookings]);
 
-  const loadBookings = async () => {
+  const loadBookings = useCallback(async () => {
     if (!user) return;
 
     try {
       const response = await getBookings(user.accessToken);
       setBookings(response.data);
-    } catch (err) {
-      console.error("Failed to load bookings:", err);
-      setError("Unable to load your bookings. Please check your connection and try again.");
+    } catch {
+      setError(
+        "Unable to load your bookings. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleDeleteBooking = async (id: string) => {
     if (!user || !confirm("Are you sure you want to cancel this booking?"))
@@ -44,9 +45,8 @@ export default function BookingsPage() {
     try {
       await deleteBooking(id, user.accessToken);
       setBookings(bookings.filter((b) => b.id !== id));
-    } catch (err) {
-      console.error("Failed to cancel booking:", err);
-      setError(err instanceof Error ? err.message : "Failed to cancel booking");
+    } catch {
+      setError("Failed to cancel booking");
     }
   };
 
@@ -81,9 +81,14 @@ export default function BookingsPage() {
                 <span className="text-2xl">📋</span>
               </div>
               <h3 className="font-heading text-lg mb-2">No bookings yet</h3>
-              <p className="text-text/70 mb-4">Discover amazing places to stay</p>
+              <p className="text-text/70 mb-4">
+                Discover amazing places to stay
+              </p>
             </div>
-            <Link href="/" className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity inline-block">
+            <Link
+              href="/"
+              className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity inline-block cursor-pointer"
+            >
               Browse venues
             </Link>
           </div>

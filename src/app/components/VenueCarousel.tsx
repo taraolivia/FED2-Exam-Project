@@ -5,14 +5,7 @@ import Link from "next/link";
 import type { Venue } from "@/lib/schemas/venue";
 import { VenueCarouselSkeleton } from "./LoadingSkeleton";
 
-// Extract sorting logic to avoid duplication
-function sortVenuesByCreatedDate(venues: Venue[]): Venue[] {
-  return [...venues].sort((a: Venue, b: Venue) => {
-    const aCreated = Date.parse(a.created);
-    const bCreated = Date.parse(b.created);
-    return bCreated - aCreated;
-  });
-}
+
 
 export default function VenueCarousel() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -22,63 +15,24 @@ export default function VenueCarousel() {
   useEffect(() => {
     async function fetchLatestVenues() {
       try {
-        // 1) Get page 1 to discover meta.pageCount
+        // Fetch only what we need for carousel (top 3 newest)
         const base = new URL("/api/holidaze/venues", window.location.origin);
         if (base.hostname !== window.location.hostname) {
-          throw new Error('Invalid API endpoint');
+          throw new Error("Invalid API endpoint");
         }
         base.searchParams.set("page", "1");
-        base.searchParams.set("limit", "100");
-
+        base.searchParams.set("limit", "3");
+        base.searchParams.set("sort", "created");
+        base.searchParams.set("sortOrder", "desc");
 
         const res = await fetch(base.toString(), { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const first = await res.json();
-        const meta = first.meta;
-        const pages = Math.max(meta?.pageCount ?? 1, 1);
+        const response = await res.json();
 
-        // 2) If only one page, done
-        if (pages === 1) {
-          const sorted = sortVenuesByCreatedDate(first.data);
-          setVenues(sorted.slice(0, 3));
-          return;
-        }
-
-        // 3) Fetch remaining pages concurrently
-        const promises = [];
-        for (let p = 2; p <= pages; p++) {
-          const u = new URL("/api/holidaze/venues", window.location.origin);
-          if (u.hostname !== window.location.hostname) {
-            throw new Error('Invalid API endpoint');
-          }
-          u.searchParams.set("page", String(p));
-          u.searchParams.set("limit", "100");
-
-          promises.push(
-            fetch(u.toString(), { cache: "no-store" })
-              .then((r) => r.json())
-              .catch((err) => {
-                const sanitizedError = err instanceof Error ? err.message.replace(/[\r\n]/g, ' ') : 'Unknown error';
-                console.warn(`Failed to fetch page ${p}:`, sanitizedError);
-                return { data: [] }; // Return empty data on error
-              }),
-          );
-        }
-
-        const rest = await Promise.all(promises);
-        // 4) Merge + de-dup by id
-        const allData = [first, ...rest].flatMap((r) => r.data);
-        const uniqueMap = new Map<string, Venue>();
-        for (const v of allData) {
-          if (v.id && !uniqueMap.has(v.id)) uniqueMap.set(v.id, v);
-        }
-
-        // Sort by created date (newest first) and take top 3
-        const sorted = sortVenuesByCreatedDate(Array.from(uniqueMap.values()));
-
-        setVenues(sorted.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch venues:", error);
+        // Server already sorted by newest, just take the data
+        setVenues(response.data);
+      } catch {
+        // Silently handle error
       } finally {
         setLoading(false);
       }
@@ -148,7 +102,7 @@ export default function VenueCarousel() {
       {/* Navigation arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors cursor-pointer"
         aria-label="Previous venue"
       >
         <svg
@@ -168,7 +122,7 @@ export default function VenueCarousel() {
 
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 transition-colors cursor-pointer"
         aria-label="Next venue"
       >
         <svg

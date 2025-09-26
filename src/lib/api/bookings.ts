@@ -14,38 +14,43 @@ import {
  */
 export async function createBooking(data: BookingCreate, accessToken: string) {
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
-  if (!apiKey) throw new Error('API key not configured');
-  if (!accessToken) throw new Error('Access token required');
-  
-  return fetchJSON<BookingSingleResponse>(ep.create(), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": apiKey,
-    },
-    body: JSON.stringify(data),
-  });
+  if (!apiKey) throw new Error("API key not configured");
+  if (!accessToken) throw new Error("Access token required");
+
+  try {
+    return await fetchJSON<BookingSingleResponse>(ep.create(), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": apiKey,
+      },
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    const { extractErrorMessage } = await import("./errors");
+    throw new Error(extractErrorMessage(error, "Booking creation failed"));
+  }
 }
 
 /**
- * Fetches current user's bookings with venue details
+ * Fetches current user's bookings with venue and customer details
  * @param accessToken - User authentication token
  * @returns Promise resolving to user's bookings
  */
 export async function getBookings(accessToken: string) {
-  if (!accessToken) throw new Error('Access token required');
+  if (!accessToken) throw new Error("Access token required");
   const username = getUsernameFromToken(accessToken);
   if (!username?.trim()) {
     throw new Error("Invalid access token");
   }
-  
+
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
   if (!apiKey) {
     throw new Error("API key not configured");
   }
-  
+
   return fetchJSON<BookingListResponse>(
-    `https://v2.api.noroff.dev/holidaze/profiles/${username}/bookings?_venue=true`,
+    `https://v2.api.noroff.dev/holidaze/profiles/${username}/bookings?_venue=true&_customer=true`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -84,21 +89,26 @@ type BookingUpdateData = {
 export async function updateBooking(
   id: string,
   data: BookingUpdateData,
-  accessToken: string
+  accessToken: string,
 ) {
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
-  if (!apiKey) throw new Error('API key not configured');
-  if (!accessToken) throw new Error('Access token required');
-  if (!id) throw new Error('Booking ID required');
-  
-  return fetchJSON<BookingSingleResponse>(ep.update(id), {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": apiKey,
-    },
-    body: JSON.stringify(data),
-  });
+  if (!apiKey) throw new Error("API key not configured");
+  if (!accessToken) throw new Error("Access token required");
+  if (!id) throw new Error("Booking ID required");
+
+  try {
+    return await fetchJSON<BookingSingleResponse>(ep.update(id), {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": apiKey,
+      },
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    const { extractErrorMessage } = await import("./errors");
+    throw new Error(extractErrorMessage(error, "Booking update failed"));
+  }
 }
 
 /**
@@ -108,15 +118,20 @@ export async function updateBooking(
  */
 export async function deleteBooking(id: string, accessToken: string) {
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
-  if (!apiKey) throw new Error('API key not configured');
-  if (!accessToken) throw new Error('Access token required');
-  if (!id) throw new Error('Booking ID required');
-  
-  return fetchJSON(ep.delete(id), {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": apiKey,
-    },
-  });
+  if (!apiKey) throw new Error("API key not configured");
+  if (!accessToken) throw new Error("Access token required");
+  if (!id) throw new Error("Booking ID required");
+
+  try {
+    return await fetchJSON(ep.delete(id), {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": apiKey,
+      },
+    });
+  } catch (error) {
+    const { extractErrorMessage } = await import("./errors");
+    throw new Error(extractErrorMessage(error, "Booking deletion failed"));
+  }
 }

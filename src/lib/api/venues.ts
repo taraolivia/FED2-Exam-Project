@@ -1,5 +1,4 @@
 import { fetchJSON } from "./http";
-import { venues as ep } from "./endpoints";
 import { VenueListResponse, VenueSingleResponse } from "@/lib/schemas/venue";
 import { validateApiKey } from "@/lib/auth";
 
@@ -35,20 +34,26 @@ export type VenueCreateData = {
  */
 export async function createVenue(data: VenueCreateData, accessToken: string) {
   validateApiKey();
-  if (!accessToken) throw new Error('Access token required');
+  if (!accessToken) throw new Error("Access token required");
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
-  
-  return fetchJSON<VenueSingleResponse>(
-    `https://v2.api.noroff.dev/holidaze/venues`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-Noroff-API-Key": apiKey,
+
+  try {
+    return await fetchJSON<VenueSingleResponse>(
+      `https://v2.api.noroff.dev/holidaze/venues`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-Noroff-API-Key": apiKey,
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    },
-  );
+    );
+  } catch (error: any) {
+    const errorMessage =
+      error?.errors?.[0]?.message || error.message || "Venue creation failed";
+    throw new Error(errorMessage);
+  }
 }
 
 /**
@@ -64,21 +69,27 @@ export async function updateVenue(
   accessToken: string,
 ) {
   validateApiKey();
-  if (!accessToken) throw new Error('Access token required');
-  if (!id) throw new Error('Venue ID required');
+  if (!accessToken) throw new Error("Access token required");
+  if (!id) throw new Error("Venue ID required");
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
-  
-  return fetchJSON<VenueSingleResponse>(
-    `https://v2.api.noroff.dev/holidaze/venues/${id}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-Noroff-API-Key": apiKey,
+
+  try {
+    return await fetchJSON<VenueSingleResponse>(
+      `https://v2.api.noroff.dev/holidaze/venues/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-Noroff-API-Key": apiKey,
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    },
-  );
+    );
+  } catch (error: any) {
+    const errorMessage =
+      error?.errors?.[0]?.message || error.message || "Venue update failed";
+    throw new Error(errorMessage);
+  }
 }
 
 /**
@@ -88,41 +99,86 @@ export async function updateVenue(
  */
 export async function deleteVenue(id: string, accessToken: string) {
   validateApiKey();
-  if (!accessToken) throw new Error('Access token required');
-  if (!id) throw new Error('Venue ID required');
+  if (!accessToken) throw new Error("Access token required");
+  if (!id) throw new Error("Venue ID required");
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
-  
-  return fetchJSON(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "X-Noroff-API-Key": apiKey,
-    },
-  });
+
+  try {
+    return await fetchJSON(`https://v2.api.noroff.dev/holidaze/venues/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": apiKey,
+      },
+    });
+  } catch (error: any) {
+    const errorMessage =
+      error?.errors?.[0]?.message || error.message || "Venue deletion failed";
+    throw new Error(errorMessage);
+  }
 }
 
 /**
- * Fetches current user's venues with bookings
+ * Fetches current user's venues with bookings and customer details
  * @param accessToken - User authentication token
  * @returns Promise resolving to user's venues
  */
 export async function getMyVenues(accessToken: string) {
   validateApiKey();
-  if (!accessToken) throw new Error('Access token required');
+  if (!accessToken) throw new Error("Access token required");
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
-  
+
   const username = getUsernameFromToken(accessToken);
-  if (!username?.trim()) throw new Error('Invalid access token');
-  
-  return fetchJSON<VenueListResponse>(
-    `https://v2.api.noroff.dev/holidaze/profiles/${username}/venues?_bookings=true&_customer=true`,
-    {
+  if (!username?.trim()) throw new Error("Invalid access token");
+
+  try {
+    return await fetchJSON<VenueListResponse>(
+      `https://v2.api.noroff.dev/holidaze/profiles/${username}/venues?_bookings=true&_customer=true`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-Noroff-API-Key": apiKey,
+        },
+      },
+    );
+  } catch (error: any) {
+    const errorMessage =
+      error?.errors?.[0]?.message || error.message || "Failed to fetch venues";
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Fetches a single venue with optional owner and bookings data
+ * @param id - Venue ID
+ * @param options - Optional query parameters
+ * @returns Promise resolving to venue data
+ */
+export async function getSingleVenue(
+  id: string,
+  options: { _owner?: boolean; _bookings?: boolean } = {},
+) {
+  validateApiKey();
+  if (!id) throw new Error("Venue ID required");
+  const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
+
+  const params = new URLSearchParams();
+  if (options._owner) params.set("_owner", "true");
+  if (options._bookings) params.set("_bookings", "true");
+
+  const url = `https://v2.api.noroff.dev/holidaze/venues/${id}${params.toString() ? `?${params.toString()}` : ""}`;
+
+  try {
+    return await fetchJSON<VenueSingleResponse>(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "X-Noroff-API-Key": apiKey,
       },
-    },
-  );
+    });
+  } catch (error: any) {
+    const errorMessage =
+      error?.errors?.[0]?.message || error.message || "Failed to fetch venue";
+    throw new Error(errorMessage);
+  }
 }
 
 /**

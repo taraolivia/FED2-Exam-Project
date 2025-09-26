@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "@/lib/api/profiles";
+import type { User } from "@/lib/auth";
+import Image from "next/image";
 
 export default function EditProfilePage() {
   const { user, setUser } = useUser();
@@ -13,15 +15,14 @@ export default function EditProfilePage() {
   const [previewBio, setPreviewBio] = useState("");
   const [previewVenueManager, setPreviewVenueManager] = useState(false);
 
-
   useEffect(() => {
     if (!user) {
       router.push("/login");
       return;
     }
-    
+
     let mounted = true;
-    
+
     const fetchProfile = async () => {
       try {
         const url = `https://v2.api.noroff.dev/holidaze/profiles/${user.name}`;
@@ -31,25 +32,30 @@ export default function EditProfilePage() {
             "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
           },
         });
-        
+
         if (res.ok && mounted) {
           const profileData = await res.json();
-          setUser(prev => prev ? {
-            ...prev,
-            venueManager: profileData.data.venueManager,
-            bio: profileData.data.bio,
-            avatar: profileData.data.avatar,
-            banner: profileData.data.banner,
-          } : null);
+          setUser((prev: User | null) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              venueManager: profileData.data.venueManager,
+              bio: profileData.data.bio,
+              avatar: profileData.data.avatar,
+              banner: profileData.data.banner,
+            };
+          });
         }
-      } catch (err) {
-        console.error('Failed to fetch profile:', err);
+      } catch {
+        // Silently handle error
       }
     };
-    
+
     fetchProfile();
-    return () => { mounted = false; };
-  }, [user?.name, user?.accessToken, router, setUser]);
+    return () => {
+      mounted = false;
+    };
+  }, [user, router, setUser]);
 
   // Update preview states when user data changes
   useEffect(() => {
@@ -57,7 +63,7 @@ export default function EditProfilePage() {
       setPreviewBio(user.bio || "");
       setPreviewVenueManager(user.venueManager || false);
     }
-  }, [user?.bio, user?.venueManager]);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -125,8 +131,21 @@ export default function EditProfilePage() {
       setSuccess(true);
       setTimeout(() => router.push("/profile?refresh=edit"), 1500);
     } catch (err) {
-      console.error("Failed to update profile:", err);
-      setError("Failed to update profile");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update profile";
+
+      // Handle specific API error messages
+      if (errorMessage.includes("avatar") || errorMessage.includes("banner")) {
+        setError(
+          "Invalid image URL. Please ensure the URL is publicly accessible.",
+        );
+      } else if (errorMessage.includes("bio")) {
+        setError("Bio must be less than 160 characters.");
+      } else if (errorMessage.includes("venueManager")) {
+        setError("Unable to update venue manager status. Please try again.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -142,14 +161,15 @@ export default function EditProfilePage() {
         {/* Profile Preview */}
         <div className="bg-background-lighter rounded-lg overflow-hidden mb-8">
           <h2 className="font-heading text-xl p-6 pb-4">Preview</h2>
-          
+
           {/* Banner */}
           <div className="relative h-32 bg-secondary-lighter mx-6 rounded-lg overflow-hidden">
             {user.banner?.url ? (
-              <img
+              <Image
                 src={user.banner.url}
                 alt={user.banner.alt || "Banner"}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-text/50">
@@ -157,16 +177,19 @@ export default function EditProfilePage() {
               </div>
             )}
           </div>
-          
+
           {/* Profile Info */}
           <div className="p-6">
             <div className="flex flex-col sm:flex-row items-start gap-6">
               {user.avatar?.url ? (
-                <img
-                  src={user.avatar.url}
-                  alt={user.avatar.alt || user.name}
-                  className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
-                />
+                <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
+                  <Image
+                    src={user.avatar.url}
+                    alt={user.avatar.alt || user.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto sm:mx-0">
                   <span className="text-2xl font-heading text-accent-darkest">
@@ -174,22 +197,22 @@ export default function EditProfilePage() {
                   </span>
                 </div>
               )}
-              
+
               <div className="flex-1 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 mb-2">
                   <h3 className="font-heading text-2xl">{user.name}</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
-                    previewVenueManager 
-                      ? 'bg-primary/20 text-primary' 
-                      : 'bg-text/10 text-text/70'
-                  }`}>
-                    {previewVenueManager ? 'Venue Manager' : 'Customer'}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
+                      previewVenueManager
+                        ? "bg-primary/20 text-primary"
+                        : "bg-text/10 text-text/70"
+                    }`}
+                  >
+                    {previewVenueManager ? "Venue Manager" : "Customer"}
                   </span>
                 </div>
                 <p className="text-text/70 mb-4">{user.email}</p>
-                {previewBio && (
-                  <p className="text-text/80">{previewBio}</p>
-                )}
+                {previewBio && <p className="text-text/80">{previewBio}</p>}
               </div>
             </div>
           </div>
@@ -352,10 +375,9 @@ export default function EditProfilePage() {
               <div>
                 <span className="font-medium">Venue Manager</span>
                 <p className="text-sm text-text/70">
-                  {user.venueManager 
-                    ? "You can create and manage venue listings" 
-                    : "Enable this to create and manage venue listings"
-                  }
+                  {user.venueManager
+                    ? "You can create and manage venue listings"
+                    : "Enable this to create and manage venue listings"}
                 </p>
               </div>
             </label>

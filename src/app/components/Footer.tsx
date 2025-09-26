@@ -13,8 +13,7 @@ export default function Footer() {
     try {
       logout();
       setUser(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
+    } catch {
       setUser(null); // Clear user state even if logout fails
     }
   };

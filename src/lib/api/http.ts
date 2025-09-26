@@ -4,7 +4,7 @@ export type HttpError = {
   issues?: unknown;
 };
 
-const ALLOWED_HOSTS = ['v2.api.noroff.dev'];
+const ALLOWED_HOSTS = ["v2.api.noroff.dev"];
 
 /**
  * Makes a JSON HTTP request with proper error handling
@@ -21,14 +21,19 @@ export async function fetchJSON<T>(
   let validatedInput: string | URL | Request = input;
   let parsedUrl: URL;
   try {
-    parsedUrl = typeof input === 'string' ? new URL(input) : input instanceof URL ? input : new URL(input.url);
+    parsedUrl =
+      typeof input === "string"
+        ? new URL(input)
+        : input instanceof URL
+          ? input
+          : new URL(input.url);
     if (!ALLOWED_HOSTS.includes(parsedUrl.hostname)) {
-      throw new Error('Invalid API endpoint');
+      throw new Error("Invalid API endpoint");
     }
     // Use parsed URL to avoid duplicate parsing
     validatedInput = parsedUrl;
   } catch {
-    throw new Error('Invalid URL format');
+    throw new Error("Invalid URL format");
   }
 
   try {
@@ -47,7 +52,7 @@ export async function fetchJSON<T>(
     let parsed: any = null;
     try {
       parsed = await res.json();
-    } catch (error) {
+    } catch {
       // Non-JSON response - don't log user input
     }
 
@@ -67,8 +72,8 @@ export async function fetchJSON<T>(
 
     return parsed as T;
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Network error - please check your connection');
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error("Network error - please check your connection");
     }
     throw error;
   }

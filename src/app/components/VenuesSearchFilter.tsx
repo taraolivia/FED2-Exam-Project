@@ -9,8 +9,8 @@ type SortOption = {
 };
 
 const SORT_OPTIONS: SortOption[] = [
-  { id: "alpha", label: "Alphabetically (A–Z)" },
   { id: "new", label: "Newly added" },
+  { id: "alpha", label: "Alphabetically (A–Z)" },
   { id: "priceDesc", label: "Price: high → low" },
   { id: "priceAsc", label: "Price: low → high" },
 ];

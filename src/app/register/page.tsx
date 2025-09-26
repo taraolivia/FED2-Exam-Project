@@ -6,8 +6,10 @@ import { register } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
 const REDIRECT_DELAY = 2000;
-const INPUT_STYLES = "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
-const BUTTON_STYLES = "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
+const INPUT_STYLES =
+  "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
+const BUTTON_STYLES =
+  "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -60,8 +62,6 @@ export default function RegisterPage() {
     }
 
     const venueManager = formData.get("venueManager") === "on";
-    
-
 
     try {
       await register({
@@ -164,7 +164,10 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-text/70 mt-4">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+          <Link
+            href="/login"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+          >
             Log in
           </Link>
         </p>

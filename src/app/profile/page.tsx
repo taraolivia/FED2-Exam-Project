@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -8,22 +8,30 @@ import { getMyVenues } from "@/lib/api/venues";
 import type { Booking } from "@/lib/schemas/booking";
 import type { Venue } from "@/lib/schemas/venue";
 import Image from "next/image";
-import { ProfileSkeleton, BookingsSkeleton } from "@/app/components/LoadingSkeleton";
+import {
+  ProfileSkeleton,
+  BookingsSkeleton,
+  ShimmerBox,
+} from "@/app/components/LoadingSkeleton";
 
-export default function ProfilePage() {
-  const { user, setUser } = useUser();
+function ProfileContent() {
+  const { user } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [isVenueManager, setIsVenueManager] = useState(false);
+
   const [editingBooking, setEditingBooking] = useState<string | null>(null);
   const [bookingError, setBookingError] = useState<string>("");
 
   const calculateBookingPrice = (booking: Booking) => {
     if (!booking.venue?.price) return "—";
-    const days = Math.ceil((new Date(booking.dateTo).getTime() - new Date(booking.dateFrom).getTime()) / (1000 * 60 * 60 * 24));
+    const days = Math.ceil(
+      (new Date(booking.dateTo).getTime() -
+        new Date(booking.dateFrom).getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
     return booking.venue.price * days;
   };
 
@@ -33,15 +41,28 @@ export default function ProfilePage() {
     } else {
       loadProfile();
     }
-  }, [user, router]);
+  }, [user, router, loadProfile]);
 
   // Handle refresh parameter separately
   useEffect(() => {
-    const refreshParam = searchParams.get('refresh');
+    const refreshParam = searchParams.get("refresh");
     if (refreshParam && user) {
+      setLoading(true);
       loadProfile();
     }
-  }, [searchParams, user]);
+  }, [searchParams, user, loadProfile]);
+
+  // Refresh data when user returns to page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user && !loading) {
+        loadProfile();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [user, loading, loadProfile]);
 
   const handleDeleteBooking = async (id: string) => {
     if (!user || !confirm("Are you sure you want to cancel this booking?"))
@@ -50,12 +71,13 @@ export default function ProfilePage() {
     try {
       await deleteBooking(id, user.accessToken);
       setBookings(bookings.filter((b) => b.id !== id));
-    } catch (err) {
-      console.error("Failed to cancel booking:", err);
-    }
+    } catch {}
   };
 
-  const handleEditBooking = async (e: React.FormEvent<HTMLFormElement>, bookingId: string) => {
+  const handleEditBooking = async (
+    e: React.FormEvent<HTMLFormElement>,
+    bookingId: string,
+  ) => {
     e.preventDefault();
     if (!user) return;
 
@@ -82,100 +104,64 @@ export default function ProfilePage() {
     }
 
     try {
-      const updatedBooking = await updateBooking(bookingId, {
-        dateFrom: new Date(dateFrom).toISOString(),
-        dateTo: new Date(dateTo).toISOString(),
-        guests,
-      }, user.accessToken);
+      const updatedBooking = await updateBooking(
+        bookingId,
+        {
+          dateFrom: new Date(dateFrom).toISOString(),
+          dateTo: new Date(dateTo).toISOString(),
+          guests,
+        },
+        user.accessToken,
+      );
 
-      setBookings(bookings.map(b => b.id === bookingId ? { ...b, ...updatedBooking.data } : b));
+      setBookings(
+        bookings.map((b) =>
+          b.id === bookingId ? { ...b, ...updatedBooking.data } : b,
+        ),
+      );
       setEditingBooking(null);
-    } catch (err) {
-      console.error("Failed to update booking:", err);
-      const errorMessage = err instanceof Error ? err.message : "Failed to update booking";
-      setBookingError(errorMessage.includes("conflict") || errorMessage.includes("available") 
-        ? "Those dates are not available. Please choose different dates." 
-        : errorMessage);
+    } catch {
+      setBookingError(
+        "Failed to update booking. Please try again.",
+      );
     }
   };
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user) return;
 
-    // Use cached user data as fallback
-    let currentVenueManager = user.venueManager || false;
-    setIsVenueManager(currentVenueManager);
-    
-    // Try to get fresh profile data to check venue manager status
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
-      if (apiKey) {
-        const url = `https://v2.api.noroff.dev/holidaze/profiles/${user.name}`;
-        const urlObj = new URL(url);
-        if (urlObj.hostname !== 'v2.api.noroff.dev') {
-          throw new Error('Invalid API endpoint');
-        }
-        const profileRes = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-            "X-Noroff-API-Key": apiKey,
-          },
-        });
-        
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          currentVenueManager = profileData.data.venueManager || false;
-          setIsVenueManager(currentVenueManager);
-          
-          // Update user context with fresh data
-          setUser({
-            ...user,
-            bio: profileData.data.bio,
-            venueManager: currentVenueManager,
-            avatar: profileData.data.avatar,
-            banner: profileData.data.banner,
-          });
-        }
-      }
-    } catch (profileErr) {
-      // Use cached data if profile fetch fails
-    }
-    
+    setLoading(true);
+    // Use user context data directly
+
     try {
       // Load bookings
-      try {
-        const bookingsResponse = await getBookings(user.accessToken);
-        setBookings(bookingsResponse.data);
-      } catch (bookingErr) {
-        setBookings([]);
-      }
-      
+      const bookingsResponse = await getBookings(user.accessToken);
+      setBookings(bookingsResponse.data);
+
       // Load venues if user is venue manager
-      if (currentVenueManager) {
-        try {
-          const venuesResponse = await getMyVenues(user.accessToken);
-          setVenues(venuesResponse.data);
-        } catch (venueErr) {
-          setVenues([]);
-        }
+      if (user.venueManager) {
+        const venuesResponse = await getMyVenues(user.accessToken);
+        setVenues(venuesResponse.data);
+      } else {
+        setVenues([]);
       }
+    } catch {
+      setBookings([]);
+      setVenues([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   if (loading) {
     return (
       <main className="min-h-screen bg-background pt-20 md:pt-32">
         <div className="mx-auto max-w-4xl px-4 py-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
-            <div className="h-10 w-32 bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-            <div className="h-10 w-32 bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-          </div>
+          <ShimmerBox className="h-10 w-32 rounded mb-8" />
           <ProfileSkeleton />
           <div className="space-y-8">
             <div>
-              <div className="h-8 w-32 bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-4" />
+              <ShimmerBox className="h-8 w-32 rounded mb-4" />
               <BookingsSkeleton />
             </div>
           </div>
@@ -198,10 +184,11 @@ export default function ProfilePage() {
           {/* Banner */}
           <div className="relative h-32 bg-secondary-lighter">
             {user.banner?.url ? (
-              <img
+              <Image
                 src={user.banner.url}
                 alt={user.banner.alt || "Banner"}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-text/50">
@@ -209,33 +196,38 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-          
+
           <div className="p-6">
             <div className="flex flex-col sm:flex-row items-start gap-6">
               {user.avatar?.url ? (
-                <img
-                  src={user.avatar.url}
-                  alt={user.avatar.alt || user.name}
-                  className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
-                />
+                <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
+                  <Image
+                    src={user.avatar.url}
+                    alt={user.avatar.alt || user.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto sm:mx-0">
                   <span className="text-2xl font-heading text-accent-darkest">
-                    {user.name.charAt(0).toUpperCase()}
+                    {user.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                 </div>
               )}
-              
+
               <div className="flex-1 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
                     <h2 className="font-heading text-2xl">{user.name}</h2>
-                    <span className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
-                      isVenueManager 
-                        ? 'bg-primary/20 text-primary' 
-                        : 'bg-text/10 text-text/70'
-                    }`}>
-                      {isVenueManager ? 'Venue Manager' : 'Customer'}
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
+                        user.venueManager
+                          ? "bg-primary/20 text-primary"
+                          : "bg-text/10 text-text/70"
+                      }`}
+                    >
+                      {user.venueManager ? "Venue Manager" : "Customer"}
                     </span>
                   </div>
                   <Link
@@ -246,9 +238,7 @@ export default function ProfilePage() {
                   </Link>
                 </div>
                 <p className="text-text/70 mb-4">{user.email}</p>
-                {user.bio && (
-                  <p className="text-text/80">{user.bio}</p>
-                )}
+                {user.bio && <p className="text-text/80">{user.bio}</p>}
               </div>
             </div>
           </div>
@@ -259,30 +249,44 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-heading text-2xl">My Bookings</h2>
             {bookings.length > 0 && (
-              <Link href="/bookings" className="text-sm text-primary hover:underline">
+              <Link
+                href="/bookings"
+                className="text-sm text-primary hover:underline"
+              >
                 View all ({bookings.length})
               </Link>
             )}
           </div>
-          
+
           {bookings.length === 0 ? (
             <div className="bg-background-lighter rounded-xl p-8 text-center border border-text/10">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <div className="w-6 h-6 bg-primary rounded opacity-60"></div>
               </div>
               <h3 className="font-medium mb-2">No bookings yet</h3>
-              <p className="text-text/60 text-sm mb-4">Start planning your next adventure</p>
-              <Link href="/" className="inline-flex items-center gap-2 bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity text-sm">
+              <p className="text-text/60 text-sm mb-4">
+                Start planning your next adventure
+              </p>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity text-sm"
+              >
                 Browse venues
               </Link>
             </div>
           ) : (
             <div className="grid gap-4">
               {bookings.slice(0, 3).map((booking) => (
-                <div key={booking.id} className="bg-background-lighter rounded-xl p-6 border border-text/10 hover:border-primary/30 transition-all duration-200">
+                <div
+                  key={booking.id}
+                  className="bg-background-lighter rounded-xl p-6 border border-text/10 hover:border-primary/30 transition-all duration-200"
+                >
                   <div className="flex gap-4">
                     {booking.venue?.media?.[0]?.url && (
-                      <Link href={`/venues/${booking.venue.id}`} className="relative w-24 h-24 bg-secondary-lighter rounded-lg overflow-hidden flex-shrink-0 hover:opacity-90 transition-opacity">
+                      <Link
+                        href={`/venues/${booking.venue.id}`}
+                        className="relative w-24 h-24 bg-secondary-lighter rounded-lg overflow-hidden flex-shrink-0 hover:opacity-90 transition-opacity"
+                      >
                         <Image
                           src={booking.venue.media[0].url}
                           alt={booking.venue.name}
@@ -291,32 +295,42 @@ export default function ProfilePage() {
                         />
                       </Link>
                     )}
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-3">
                         <div>
                           {booking.venue ? (
-                            <Link href={`/venues/${booking.venue.id}`} className="font-medium text-lg mb-1 hover:text-primary transition-colors block">
+                            <Link
+                              href={`/venues/${booking.venue.id}`}
+                              className="font-medium text-lg mb-1 hover:text-primary transition-colors block"
+                            >
                               {booking.venue.name}
                             </Link>
                           ) : (
                             <h3 className="font-medium text-lg mb-1">Venue</h3>
                           )}
                           <p className="text-text/60 text-sm">
-                            {new Date(booking.dateFrom).toLocaleDateString()} - {new Date(booking.dateTo).toLocaleDateString()}
+                            {new Date(booking.dateFrom).toLocaleDateString()} -{" "}
+                            {new Date(booking.dateTo).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-lg">
                             ${calculateBookingPrice(booking)}
                           </p>
-                          <p className="text-text/60 text-sm">{booking.guests} guest{booking.guests !== 1 ? 's' : ''}</p>
+                          <p className="text-text/60 text-sm">
+                            {booking.guests} guest
+                            {booking.guests !== 1 ? "s" : ""}
+                          </p>
                         </div>
                       </div>
-                      
+
                       {editingBooking === booking.id ? (
                         <div className="bg-background rounded-lg p-4 border border-text/20">
-                          <form onSubmit={(e) => handleEditBooking(e, booking.id)} className="space-y-4">
+                          <form
+                            onSubmit={(e) => handleEditBooking(e, booking.id)}
+                            className="space-y-4"
+                          >
                             {bookingError && (
                               <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
                                 {bookingError}
@@ -324,27 +338,33 @@ export default function ProfilePage() {
                             )}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                               <div>
-                                <label className="block text-sm font-medium text-text/70 mb-1">Check-in</label>
+                                <label className="block text-sm font-medium text-text/70 mb-1">
+                                  Check-in
+                                </label>
                                 <input
                                   type="date"
                                   name="dateFrom"
-                                  defaultValue={booking.dateFrom.split('T')[0]}
+                                  defaultValue={booking.dateFrom.split("T")[0]}
                                   className="w-full px-3 py-2 text-sm border border-text/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                                   required
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-text/70 mb-1">Check-out</label>
+                                <label className="block text-sm font-medium text-text/70 mb-1">
+                                  Check-out
+                                </label>
                                 <input
                                   type="date"
                                   name="dateTo"
-                                  defaultValue={booking.dateTo.split('T')[0]}
+                                  defaultValue={booking.dateTo.split("T")[0]}
                                   className="w-full px-3 py-2 text-sm border border-text/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                                   required
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-text/70 mb-1">Guests</label>
+                                <label className="block text-sm font-medium text-text/70 mb-1">
+                                  Guests
+                                </label>
                                 <input
                                   type="number"
                                   name="guests"
@@ -357,10 +377,17 @@ export default function ProfilePage() {
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              <button type="submit" className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                              <button
+                                type="submit"
+                                className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                              >
                                 Save Changes
                               </button>
-                              <button type="button" onClick={() => setEditingBooking(null)} className="px-4 py-2 text-sm text-text/70 hover:text-text transition-colors">
+                              <button
+                                type="button"
+                                onClick={() => setEditingBooking(null)}
+                                className="px-4 py-2 text-sm text-text/70 hover:text-text transition-colors cursor-pointer"
+                              >
                                 Cancel
                               </button>
                             </div>
@@ -387,7 +414,10 @@ export default function ProfilePage() {
                 </div>
               ))}
               {bookings.length > 3 && (
-                <Link href="/bookings" className="block text-center text-primary hover:underline">
+                <Link
+                  href="/bookings"
+                  className="block text-center text-primary hover:underline"
+                >
                   View all {bookings.length} bookings
                 </Link>
               )}
@@ -396,12 +426,15 @@ export default function ProfilePage() {
         </div>
 
         {/* My Venues (if venue manager) */}
-        {isVenueManager && (
+        {user.venueManager && (
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-heading text-2xl">My Venues</h2>
               {venues.length > 0 ? (
-                <Link href="/manage-venues" className="text-sm text-primary hover:underline">
+                <Link
+                  href="/manage-venues"
+                  className="text-sm text-primary hover:underline"
+                >
                   Manage all ({venues.length})
                 </Link>
               ) : (
@@ -416,14 +449,20 @@ export default function ProfilePage() {
             {venues.length === 0 ? (
               <div className="bg-background-lighter rounded-lg p-6 text-center">
                 <p className="text-text/70 mb-4">No venues yet</p>
-                <Link href="/manage-venues/create" className="text-primary hover:underline">
+                <Link
+                  href="/manage-venues/create"
+                  className="text-primary hover:underline"
+                >
                   Create your first venue
                 </Link>
               </div>
             ) : (
               <div className="space-y-4">
                 {venues.slice(0, 3).map((venue) => (
-                  <div key={venue.id} className="bg-background-lighter rounded-lg p-4">
+                  <div
+                    key={venue.id}
+                    className="bg-background-lighter rounded-lg p-4"
+                  >
                     <div className="flex flex-col sm:flex-row gap-4">
                       {venue.media?.[0]?.url && (
                         <div className="relative w-full sm:w-20 h-20 bg-secondary-lighter rounded-lg overflow-hidden flex-shrink-0">
@@ -444,10 +483,16 @@ export default function ProfilePage() {
                           <div>Bookings: {venue.bookings?.length ?? 0}</div>
                         </div>
                         <div className="flex gap-2 mt-2">
-                          <Link href={`/venues/${venue.id}`} className="text-primary hover:underline text-sm">
+                          <Link
+                            href={`/venues/${venue.id}`}
+                            className="text-primary hover:underline text-sm"
+                          >
                             View
                           </Link>
-                          <Link href={`/manage-venues/edit/${venue.id}`} className="text-primary hover:underline text-sm">
+                          <Link
+                            href={`/manage-venues/edit/${venue.id}`}
+                            className="text-primary hover:underline text-sm"
+                          >
                             Edit
                           </Link>
                         </div>
@@ -456,7 +501,10 @@ export default function ProfilePage() {
                   </div>
                 ))}
                 {venues.length > 3 && (
-                  <Link href="/manage-venues" className="block text-center text-primary hover:underline">
+                  <Link
+                    href="/manage-venues"
+                    className="block text-center text-primary hover:underline"
+                  >
                     View all {venues.length} venues
                   </Link>
                 )}
@@ -466,5 +514,22 @@ export default function ProfilePage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-background pt-20 md:pt-32">
+          <div className="mx-auto max-w-4xl px-4 py-8">
+            <ShimmerBox className="h-10 w-32 rounded mb-8" />
+            <ProfileSkeleton />
+          </div>
+        </main>
+      }
+    >
+      <ProfileContent />
+    </Suspense>
   );
 }

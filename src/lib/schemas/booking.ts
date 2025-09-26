@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { VenueSchema } from "./venue";
 
-const validateDateRange = (data: { dateFrom: string; dateTo: string }) => 
+const validateDateRange = (data: { dateFrom: string; dateTo: string }) =>
   new Date(data.dateFrom) < new Date(data.dateTo);
 
 const validateFutureDate = (data: { dateFrom: string }) => {
@@ -21,18 +21,21 @@ export const BookingSchema = z.object({
   venue: VenueSchema.optional(),
 });
 
-export const BookingCreateSchema = z.object({
-  dateFrom: z.string().datetime(),
-  dateTo: z.string().datetime(),
-  guests: z.number().min(1),
-  venueId: z.string(),
-}).refine(validateFutureDate, {
-  message: "Check-in date cannot be in the past",
-  path: ["dateFrom"],
-}).refine(validateDateRange, {
-  message: "Check-in date must be before check-out date",
-  path: ["dateTo"],
-});
+export const BookingCreateSchema = z
+  .object({
+    dateFrom: z.string().datetime(),
+    dateTo: z.string().datetime(),
+    guests: z.number().min(1),
+    venueId: z.string(),
+  })
+  .refine(validateFutureDate, {
+    message: "Check-in date cannot be in the past",
+    path: ["dateFrom"],
+  })
+  .refine(validateDateRange, {
+    message: "Check-in date must be before check-out date",
+    path: ["dateTo"],
+  });
 
 export const BookingListResponseSchema = z.object({
   data: z.array(BookingSchema),

@@ -1,9 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { ShimmerBox } from "./LoadingSkeleton";
 
 const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 type Booking = {
@@ -33,25 +44,27 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
 
   useEffect(() => {
     loadVenueBookings();
-  }, [venueId]);
+  }, [loadVenueBookings]);
 
-  const loadVenueBookings = async () => {
+  const loadVenueBookings = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const url = `https://v2.api.noroff.dev/holidaze/venues/${venueId}?_bookings=true`;
 
-      const res = await fetch(url);
+      const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
+      const res = await fetch(url, {
+        headers: apiKey ? { "X-Noroff-API-Key": apiKey } : {},
+      });
       if (!res.ok) throw new Error(`Failed to load availability`);
       const data = await res.json();
       setBookings(data.data.bookings || []);
-    } catch (err) {
-      console.error("Failed to load bookings:", err);
-      setError(err instanceof Error ? err.message : "Failed to load availability");
+    } catch {
+      setError("Unable to load availability. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [venueId]);
 
   const isDateBooked = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
@@ -118,15 +131,14 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
 
   const days = getDaysInMonth(currentMonth);
 
-
   if (loading) {
     return (
       <div className="bg-background-lighter rounded-lg p-6">
-        <div className="animate-pulse">
-          <div className="h-6 bg-text/10 rounded mb-4"></div>
+        <div>
+          <ShimmerBox className="h-6 rounded mb-4" />
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: 35 }).map((_, i) => (
-              <div key={i} className="h-8 bg-text/10 rounded"></div>
+              <ShimmerBox key={i} className="h-8 rounded" />
             ))}
           </div>
         </div>
@@ -141,7 +153,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
           <p className="text-red-600 mb-4">{error}</p>
           <button
             onClick={loadVenueBookings}
-            className="bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            className="bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
           >
             Try Again
           </button>
@@ -159,7 +171,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
               new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1),
             )
           }
-          className="p-2 hover:bg-background rounded"
+          className="p-2 hover:bg-background rounded cursor-pointer"
         >
           ←
         </button>
@@ -172,7 +184,7 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
               new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
             )
           }
-          className="p-2 hover:bg-background rounded"
+          className="p-2 hover:bg-background rounded cursor-pointer"
         >
           →
         </button>

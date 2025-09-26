@@ -9,10 +9,10 @@ async function getVenue(id: string): Promise<Venue | null> {
     const url = `https://v2.api.noroff.dev/holidaze/venues/${id}`;
     const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY;
     if (!apiKey) {
-      throw new Error('API key is required');
+      throw new Error("API key is required");
     }
     const headers: HeadersInit = {
-      'X-Noroff-API-Key': apiKey
+      "X-Noroff-API-Key": apiKey,
     };
     const res = await fetch(url, {
       next: { revalidate: 3600 }, // Revalidate every hour

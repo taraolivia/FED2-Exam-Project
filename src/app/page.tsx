@@ -3,6 +3,7 @@ import HeroSection from "./components/HeroSection";
 import VenueCarousel from "./components/VenueCarousel";
 import QuoteSection from "./components/QuoteSection";
 import VenuesGrid from "./components/VenuesGrid";
+import { ShimmerBox } from "./components/LoadingSkeleton";
 
 export default function Home() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
           fallback={
             <div className="bg-background py-8">
               <div className="mx-auto max-w-6xl px-4">
-                <div className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+                <ShimmerBox className="h-64 rounded-lg" />
               </div>
             </div>
           }

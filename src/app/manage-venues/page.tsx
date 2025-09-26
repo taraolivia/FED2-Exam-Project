@@ -1,13 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { getMyVenues, deleteVenue } from "@/lib/api/venues";
 import type { Venue } from "@/lib/schemas/venue";
 import Image from "next/image";
 import Link from "next/link";
-
-const SHIMMER_CLASSES = "bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]";
+import { ShimmerBox } from "@/app/components/LoadingSkeleton";
 
 export default function ManageVenuesPage() {
   const { user } = useUser();
@@ -29,24 +28,31 @@ export default function ManageVenuesPage() {
     }
 
     loadVenues();
-  }, [user, router]);
+  }, [user, router, loadVenues]);
 
-  const loadVenues = async () => {
+  const loadVenues = useCallback(async () => {
     if (!user) return;
 
     try {
       const response = await getMyVenues(user.accessToken);
       setVenues(response.data);
-    } catch (err) {
-      console.error("Failed to load venues:", err);
-      setError("Unable to load your venues. Please check your connection and try again.");
+    } catch {
+      setError(
+        "Unable to load your venues. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleDeleteVenue = async (id: string, name: string) => {
-    if (!user || !confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) return;
+    if (
+      !user ||
+      !confirm(
+        `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      )
+    )
+      return;
 
     const originalVenues = [...venues];
     // Optimistically remove from UI
@@ -54,11 +60,10 @@ export default function ManageVenuesPage() {
 
     try {
       await deleteVenue(id, user.accessToken);
-    } catch (err) {
-      console.error("Failed to delete venue:", err);
+    } catch {
       // Restore venues on error
       setVenues(originalVenues);
-      setError(err instanceof Error ? err.message : "Failed to delete venue");
+      setError("Failed to delete venue");
     }
   };
 
@@ -67,20 +72,20 @@ export default function ManageVenuesPage() {
       <main className="min-h-screen bg-background pt-20 md:pt-32">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex justify-between items-center mb-8">
-            <div className={`h-10 w-32 ${SHIMMER_CLASSES} rounded`} />
-            <div className={`h-10 w-32 ${SHIMMER_CLASSES} rounded`} />
+            <ShimmerBox className="h-10 w-32 rounded" />
+            <ShimmerBox className="h-10 w-32 rounded" />
           </div>
           <div className="grid gap-6">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-background-lighter rounded-xl p-6">
                 <div className="flex gap-6">
-                  <div className={`w-32 h-24 ${SHIMMER_CLASSES} rounded-lg`} />
+                  <ShimmerBox className="w-32 h-24 rounded-lg" />
                   <div className="flex-1 space-y-3">
-                    <div className={`h-6 w-48 ${SHIMMER_CLASSES} rounded`} />
-                    <div className={`h-4 w-full ${SHIMMER_CLASSES} rounded`} />
+                    <ShimmerBox className="h-6 w-48 rounded" />
+                    <ShimmerBox className="h-4 w-full rounded" />
                     <div className="grid grid-cols-4 gap-4">
                       {[...Array(4)].map((_, j) => (
-                        <div key={j} className={`h-4 w-16 ${SHIMMER_CLASSES} rounded`} />
+                        <ShimmerBox key={j} className="h-4 w-16 rounded" />
                       ))}
                     </div>
                   </div>
@@ -120,7 +125,10 @@ export default function ManageVenuesPage() {
               <div className="w-8 h-8 bg-primary rounded opacity-60"></div>
             </div>
             <h3 className="font-heading text-xl mb-3">No venues yet</h3>
-            <p className="text-text/60 mb-6 max-w-md mx-auto">Start earning by listing your first property and welcoming guests from around the world</p>
+            <p className="text-text/60 mb-6 max-w-md mx-auto">
+              Start earning by listing your first property and welcoming guests
+              from around the world
+            </p>
             <Link
               href="/manage-venues/create"
               className="bg-primary text-accent-darkest px-8 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 font-medium"
@@ -150,7 +158,10 @@ export default function ManageVenuesPage() {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <Link href={`/venues/${venue.id}`} className="font-heading text-xl mb-2 hover:text-primary transition-colors block">
+                        <Link
+                          href={`/venues/${venue.id}`}
+                          className="font-heading text-xl mb-2 hover:text-primary transition-colors block"
+                        >
                           {venue.name}
                         </Link>
                         <p className="text-text/60 text-sm line-clamp-3">
@@ -158,8 +169,13 @@ export default function ManageVenuesPage() {
                         </p>
                       </div>
                       <div className="text-right ml-4">
-                        <p className="font-medium text-lg">${venue.price}<span className="text-sm text-text/60">/night</span></p>
-                        <p className="text-text/60 text-sm">{venue.maxGuests} guests max</p>
+                        <p className="font-medium text-lg">
+                          ${venue.price}
+                          <span className="text-sm text-text/60">/night</span>
+                        </p>
+                        <p className="text-text/60 text-sm">
+                          {venue.maxGuests} guests max
+                        </p>
                       </div>
                     </div>
 
@@ -170,7 +186,10 @@ export default function ManageVenuesPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-text/60">Bookings:</span>
-                        <span>{venue.bookings?.length ?? 0} booking{(venue.bookings?.length ?? 0) !== 1 ? 's' : ''}</span>
+                        <span>
+                          {venue.bookings?.length ?? 0} booking
+                          {(venue.bookings?.length ?? 0) !== 1 ? "s" : ""}
+                        </span>
                       </div>
                     </div>
 
@@ -245,9 +264,9 @@ export default function ManageVenuesPage() {
                     </div>
                   </div>
                 </div>
-              ))
-              }
-              {(!selectedVenue.bookings || selectedVenue.bookings.length === 0) && (
+              ))}
+              {(!selectedVenue.bookings ||
+                selectedVenue.bookings.length === 0) && (
                 <p className="text-text/70">No bookings yet</p>
               )}
             </div>

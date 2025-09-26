@@ -10,7 +10,7 @@ import { getStoredUser, type User } from "@/lib/auth";
 
 type UserContextType = {
   user: User | null;
-  setUser: (user: User | null) => void;
+  setUser: (user: User | null | ((prev: User | null) => User | null)) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,10 +20,20 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  * @param children - Child components to wrap with user context
  */
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
+
+  const setUser = (
+    userOrUpdater: User | null | ((prev: User | null) => User | null),
+  ) => {
+    if (typeof userOrUpdater === "function") {
+      setUserState(userOrUpdater);
+    } else {
+      setUserState(userOrUpdater);
+    }
+  };
 
   useEffect(() => {
-    setUser(getStoredUser());
+    setUserState(getStoredUser());
   }, []);
 
   return (
