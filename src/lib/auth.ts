@@ -76,14 +76,31 @@ export async function login(data: LoginData): Promise<User> {
     }
 
     const result = await res.json();
+    
+    // Fetch the latest profile to get current venueManager status
+    let profileData = result.data;
+    try {
+      const profileRes = await fetch(`${API_BASE}/holidaze/profiles/${result.data.name}`, {
+        headers: {
+          "X-Noroff-API-Key": apiKey,
+        },
+      });
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        profileData = { ...result.data, ...profile.data };
+      }
+    } catch {
+      // Use login data if profile fetch fails
+    }
+    
     const user: User = {
-      name: result.data.name,
-      email: result.data.email,
+      name: profileData.name,
+      email: profileData.email,
       accessToken: result.data.accessToken,
-      bio: result.data.bio || undefined,
-      avatar: result.data.avatar || undefined,
-      banner: result.data.banner || undefined,
-      venueManager: result.data.venueManager || false,
+      bio: profileData.bio || undefined,
+      avatar: profileData.avatar || undefined,
+      banner: profileData.banner || undefined,
+      venueManager: profileData.venueManager || false,
     };
 
     // Store in localStorage (client-side only)

@@ -122,11 +122,17 @@ export default function EditProfilePage() {
       );
 
       // Update user context with new data
-      setUser({
+      const updatedUser = {
         ...user,
         ...response.data,
         accessToken: user.accessToken, // Keep the token
-      });
+      };
+      setUser(updatedUser);
+      
+      // Also update localStorage to persist the changes
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
 
       setSuccess(true);
       setTimeout(() => router.push("/profile?refresh=edit"), 1500);
