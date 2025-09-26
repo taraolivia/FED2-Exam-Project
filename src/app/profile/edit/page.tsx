@@ -21,59 +21,16 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (!user) {
       router.push("/login");
-      return;
     }
+  }, [user, router]);
 
-    let mounted = true;
-
-    const fetchProfile = async () => {
-      try {
-        const url = `https://v2.api.noroff.dev/holidaze/profiles/${user.name}`;
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-            "X-Noroff-API-Key": process.env.NEXT_PUBLIC_NOROFF_API_KEY!,
-          },
-        });
-
-        if (res.ok && mounted) {
-          const profileData = await res.json();
-          console.log('Profile data from API:', profileData.data);
-          setUser((prev: User | null) => {
-            if (!prev) return null;
-            const updatedUser = {
-              ...prev,
-              venueManager: profileData.data.venueManager ?? prev.venueManager,
-              bio: profileData.data.bio ?? prev.bio,
-              avatar: profileData.data.avatar ?? prev.avatar,
-              banner: profileData.data.banner ?? prev.banner,
-            };
-            console.log('Updated user with bio:', updatedUser);
-            // Update localStorage too
-            if (typeof window !== "undefined") {
-              localStorage.setItem("user", JSON.stringify(updatedUser));
-            }
-            return updatedUser;
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
-      }
-    };
-
-    fetchProfile();
-    return () => {
-      mounted = false;
-    };
-  }, [user, router, setUser]);
-
-  // Update preview states when user data changes
+  // Initialize preview states once when user loads
   useEffect(() => {
-    if (user) {
+    if (user && previewBio === "") {
       setPreviewBio(user.bio || "");
       setPreviewVenueManager(user.venueManager || false);
     }
-  }, [user]);
+  }, [user, previewBio]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
