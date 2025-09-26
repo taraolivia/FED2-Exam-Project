@@ -13,20 +13,6 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    if (!user.venueManager) {
-      router.push("/profile");
-      return;
-    }
-
-    loadVenue();
-  }, [user, router, loadVenue]);
-
   const loadVenue = useCallback(async () => {
     try {
       // Validate params.id to prevent SSRF
@@ -42,6 +28,22 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
       setError("Unable to load venue details. Please try again.");
     }
   }, [params.id]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (!user.venueManager) {
+      router.push("/profile");
+      return;
+    }
+
+    loadVenue();
+  }, [user, router, loadVenue]);
+
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

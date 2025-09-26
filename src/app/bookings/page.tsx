@@ -14,15 +14,7 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    loadBookings();
-  }, [user, router, loadBookings]);
-
+  
   const loadBookings = useCallback(async () => {
     if (!user) return;
 
@@ -37,6 +29,17 @@ export default function BookingsPage() {
       setLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    loadBookings();
+  }, [user, router, loadBookings]);
+
+
 
   const handleDeleteBooking = async (id: string) => {
     if (!user || !confirm("Are you sure you want to cancel this booking?"))

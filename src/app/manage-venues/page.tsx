@@ -16,20 +16,6 @@ export default function ManageVenuesPage() {
   const [error, setError] = useState("");
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    if (!user.venueManager) {
-      router.push("/profile");
-      return;
-    }
-
-    loadVenues();
-  }, [user, router, loadVenues]);
-
   const loadVenues = useCallback(async () => {
     if (!user) return;
 
@@ -44,6 +30,22 @@ export default function ManageVenuesPage() {
       setLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (!user.venueManager) {
+      router.push("/profile");
+      return;
+    }
+
+    loadVenues();
+  }, [user, router, loadVenues]);
+
+
 
   const handleDeleteVenue = async (id: string, name: string) => {
     if (

@@ -35,6 +35,32 @@ function ProfileContent() {
     return booking.venue.price * days;
   };
 
+  const loadProfile = useCallback(async () => {
+    if (!user) return;
+
+    setLoading(true);
+    // Use user context data directly
+
+    try {
+      // Load bookings
+      const bookingsResponse = await getBookings(user.accessToken);
+      setBookings(bookingsResponse.data);
+
+      // Load venues if user is venue manager
+      if (user.venueManager) {
+        const venuesResponse = await getMyVenues(user.accessToken);
+        setVenues(venuesResponse.data);
+      } else {
+        setVenues([]);
+      }
+    } catch {
+      setBookings([]);
+      setVenues([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -126,32 +152,6 @@ function ProfileContent() {
       );
     }
   };
-
-  const loadProfile = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
-    // Use user context data directly
-
-    try {
-      // Load bookings
-      const bookingsResponse = await getBookings(user.accessToken);
-      setBookings(bookingsResponse.data);
-
-      // Load venues if user is venue manager
-      if (user.venueManager) {
-        const venuesResponse = await getMyVenues(user.accessToken);
-        setVenues(venuesResponse.data);
-      } else {
-        setVenues([]);
-      }
-    } catch {
-      setBookings([]);
-      setVenues([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
 
   if (loading) {
     return (

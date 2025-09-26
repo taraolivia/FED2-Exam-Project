@@ -42,10 +42,6 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadVenueBookings();
-  }, [loadVenueBookings]);
-
   const loadVenueBookings = useCallback(async () => {
     try {
       setLoading(true);
@@ -65,6 +61,12 @@ export default function AvailabilityCalendar({ venueId, onDateSelect }: Props) {
       setLoading(false);
     }
   }, [venueId]);
+
+  useEffect(() => {
+    loadVenueBookings();
+  }, [loadVenueBookings]);
+
+
 
   const isDateBooked = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
