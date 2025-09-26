@@ -77,11 +77,12 @@ export async function login(data: LoginData): Promise<User> {
 
     const result = await res.json();
     
-    // Fetch the latest profile to get current venueManager status
+    // Fetch the latest profile to get current data including bio
     let profileData = result.data;
     try {
       const profileRes = await fetch(`${API_BASE}/holidaze/profiles/${result.data.name}`, {
         headers: {
+          "Authorization": `Bearer ${result.data.accessToken}`,
           "X-Noroff-API-Key": apiKey,
         },
       });
