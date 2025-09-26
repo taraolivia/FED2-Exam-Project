@@ -48,9 +48,10 @@ async function getVenue(id: string): Promise<Venue | null> {
 export default async function VenuePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const venue = await getVenue(params.id);
+  const { id } = await params;
+  const venue = await getVenue(id);
 
   if (!venue) {
     notFound();
