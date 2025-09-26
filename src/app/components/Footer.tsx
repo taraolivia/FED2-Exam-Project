@@ -5,6 +5,18 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
+/**
+ * Footer component with navigation and authentication controls
+ * 
+ * Features:
+ * - Brand logo and navigation
+ * - User authentication state (login/logout)
+ * - Responsive layout for mobile and desktop
+ * - Smooth scroll to venues section on homepage
+ * - Developer credit
+ * 
+ * @returns JSX element containing the site footer
+ */
 export default function Footer() {
   const { user, setUser } = useUser();
   const pathname = usePathname();
@@ -50,7 +62,7 @@ export default function Footer() {
             <Link
               href="/#venues"
               onClick={handleVenuesClick}
-              className="text-accent-darkest hover:text-accent transition-colors"
+              className="text-accent-darkest hover:text-accent transition-colors cursor-pointer"
             >
               Venues
             </Link>
@@ -62,13 +74,13 @@ export default function Footer() {
               <>
                 <Link
                   href="/profile"
-                  className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background transition-colors"
+                  className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background transition-colors cursor-pointer"
                 >
                   {user.name}
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-accent-darkest/70 hover:text-accent-darkest text-sm"
+                  className="text-accent-darkest/70 hover:text-accent-darkest text-sm cursor-pointer"
                 >
                   Logout
                 </button>
@@ -77,13 +89,13 @@ export default function Footer() {
               <>
                 <Link
                   href="/login"
-                  className="text-accent-darkest hover:text-accent transition-colors text-sm"
+                  className="text-accent-darkest hover:text-accent transition-colors text-sm cursor-pointer"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-accent text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                  className="bg-accent text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   Sign up
                 </Link>

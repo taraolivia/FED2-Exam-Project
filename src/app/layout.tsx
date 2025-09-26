@@ -1,3 +1,13 @@
+/**
+ * Root layout component for the Holidaze application
+ * 
+ * Provides:
+ * - Global font configuration (Inter + Marcellus)
+ * - SEO metadata and OpenGraph tags
+ * - User authentication context
+ * - Global navigation and footer
+ * - CSS custom properties for design system
+ */
 import type { Metadata } from "next";
 import { Inter, Marcellus } from "next/font/google";
 import "./globals.css";
@@ -5,12 +15,14 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { UserProvider } from "@/lib/contexts/UserContext";
 
+/** Body font configuration */
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
+/** Heading font configuration */
 const marcellus = Marcellus({
   weight: "400",
   subsets: ["latin"],

@@ -1,9 +1,28 @@
+/**
+ * Booking schema definitions and validation for venue reservations
+ * 
+ * Defines TypeScript types and Zod validation schemas for:
+ * - Booking data structure with dates, guests, and venue information
+ * - Booking creation with validation rules
+ * - API response formats for bookings
+ * - Date validation to prevent past dates and invalid ranges
+ */
 import { z } from "zod";
 import { VenueSchema } from "./venue";
 
+/**
+ * Validates that check-out date is after check-in date
+ * @param data - Object containing dateFrom and dateTo strings
+ * @returns True if date range is valid
+ */
 const validateDateRange = (data: { dateFrom: string; dateTo: string }) =>
   new Date(data.dateFrom) < new Date(data.dateTo);
 
+/**
+ * Validates that check-in date is not in the past
+ * @param data - Object containing dateFrom string
+ * @returns True if date is today or in the future
+ */
 const validateFutureDate = (data: { dateFrom: string }) => {
   const from = new Date(data.dateFrom);
   const now = new Date();

@@ -2,6 +2,17 @@
 import Image from "next/image";
 import SearchFieldHero from "./SearchFieldHero";
 
+/**
+ * Hero section component for the homepage
+ * 
+ * Features:
+ * - Full-screen background image with deer
+ * - Centered search functionality
+ * - Responsive Holidaze logo at bottom
+ * - Accessible design with proper ARIA labels
+ * 
+ * @returns JSX element containing the hero section
+ */
 export default function HeroSection() {
   return (
     <section

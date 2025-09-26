@@ -1,3 +1,6 @@
+/**
+ * Error banner component for displaying error messages
+ */
 type Props = { message: string; onClose?: () => void; title?: string };
 export default function ErrorBanner({
   message,

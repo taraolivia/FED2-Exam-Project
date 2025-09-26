@@ -1,3 +1,6 @@
+/**
+ * Inspirational quote section component
+ */
 export default function QuoteSection() {
   return (
     <section aria-label="Quote section" className="bg-primary-lighter">

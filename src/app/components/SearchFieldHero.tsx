@@ -1,3 +1,6 @@
+/**
+ * Hero search field component with venue search functionality
+ */
 import Image from "next/image";
 
 export default function SearchFieldHero() {
@@ -36,7 +39,7 @@ export default function SearchFieldHero() {
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-4 py-2 text-sm font-medium bg-primary text-accent-darkest hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 active:scale-95"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-4 py-2 text-sm font-medium bg-primary text-accent-darkest hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               SEARCH
             </button>

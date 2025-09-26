@@ -2,12 +2,16 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+/** Available sorting options for venues */
 type SortId = "alpha" | "new" | "priceDesc" | "priceAsc";
+
+/** Sort option configuration */
 type SortOption = {
   id: SortId;
   label: string;
 };
 
+/** Available sorting options with user-friendly labels */
 const SORT_OPTIONS: SortOption[] = [
   { id: "new", label: "Newly added" },
   { id: "alpha", label: "Alphabetically (A–Z)" },
@@ -15,13 +19,31 @@ const SORT_OPTIONS: SortOption[] = [
   { id: "priceAsc", label: "Price: low → high" },
 ];
 
+/** Props for the VenuesSearchFilter component */
 type Props = {
+  /** Current sort option */
   sortId: SortId;
+  /** Function to update sort option */
   setSortId: (sortId: SortId) => void;
+  /** Total number of venues available */
   total: number;
+  /** Number of venues on current page */
   pageItemsLength: number;
 };
 
+/**
+ * Search and filter controls for the venues grid
+ * 
+ * Features:
+ * - Text search with URL parameter management
+ * - Sort options (alphabetical, newest, price)
+ * - Search result display and clearing
+ * - Results count display
+ * - Responsive design
+ * 
+ * @param props - Component props
+ * @returns JSX element with search and filter controls
+ */
 export default function VenuesSearchFilter({
   sortId,
   setSortId,
@@ -68,7 +90,7 @@ export default function VenuesSearchFilter({
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-primary px-3 py-1 text-sm text-accent-darkest hover:opacity-90"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-primary px-3 py-1 text-sm text-accent-darkest hover:opacity-90 cursor-pointer"
               >
                 Search
               </button>
@@ -99,7 +121,7 @@ export default function VenuesSearchFilter({
           <span className="font-medium">"{q}"</span>
           <button
             onClick={clearSearch}
-            className="text-primary hover:underline"
+            className="text-primary hover:underline cursor-pointer"
           >
             Clear search
           </button>

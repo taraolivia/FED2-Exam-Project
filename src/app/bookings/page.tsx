@@ -8,6 +8,19 @@ import type { Booking } from "@/lib/schemas/booking";
 import Image from "next/image";
 import { BookingsSkeleton } from "@/app/components/LoadingSkeleton";
 
+/**
+ * Bookings page displaying all user bookings with management capabilities
+ * 
+ * Features:
+ * - Complete list of user bookings
+ * - Booking cancellation with confirmation
+ * - Venue details and navigation
+ * - Price calculation and display
+ * - Empty state with call-to-action
+ * - Error handling and loading states
+ * 
+ * @returns JSX element with bookings list or empty state
+ */
 export default function BookingsPage() {
   const { user } = useUser();
   const router = useRouter();
@@ -152,14 +165,14 @@ export default function BookingsPage() {
                       {booking.venue && (
                         <Link
                           href={`/venues/${booking.venue.id}`}
-                          className="text-primary hover:underline text-sm"
+                          className="text-primary hover:underline text-sm cursor-pointer"
                         >
                           View venue
                         </Link>
                       )}
                       <button
                         onClick={() => handleDeleteBooking(booking.id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="text-red-600 hover:text-red-800 text-sm cursor-pointer"
                       >
                         Cancel booking
                       </button>

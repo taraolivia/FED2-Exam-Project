@@ -1,3 +1,6 @@
+/**
+ * Venue management page component
+ */
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
@@ -278,14 +281,14 @@ export default function CreateVenuePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background transition-colors"
+              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
             >
               {loading ? "Creating..." : "Create Venue"}
             </button>

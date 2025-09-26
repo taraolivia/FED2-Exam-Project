@@ -1,5 +1,15 @@
+/**
+ * Profile schema definitions and validation for user accounts
+ * 
+ * Defines TypeScript types and Zod validation schemas for:
+ * - User profile data with avatar, banner, and bio
+ * - Profile update operations with validation
+ * - API response formats for profiles
+ * - Venue manager role management
+ */
 import { z } from "zod";
 
+/** Schema for profile media objects (avatar, banner) */
 const MediaSchema = z.object({
   url: z.string().url(),
   alt: z.string().optional(),

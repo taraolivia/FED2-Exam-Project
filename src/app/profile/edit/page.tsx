@@ -1,3 +1,6 @@
+/**
+ * Profile editing page component
+ */
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
@@ -115,11 +118,13 @@ export default function EditProfilePage() {
     }
 
     try {
+      console.log('📤 Updating profile with data:', updateData);
       const response = await updateProfile(
         user.name,
         updateData,
         user.accessToken,
       );
+      console.log('✅ Profile update response:', response.data);
 
       // Update user context with new data
       const updatedUser = {
@@ -127,11 +132,13 @@ export default function EditProfilePage() {
         ...response.data,
         accessToken: user.accessToken, // Keep the token
       };
+      console.log('🔄 Setting updated user:', updatedUser);
       setUser(updatedUser);
       
       // Also update localStorage to persist the changes
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(updatedUser));
+        console.log('💾 Updated localStorage with:', updatedUser);
       }
 
       setSuccess(true);
@@ -279,7 +286,7 @@ export default function EditProfilePage() {
                   value={previewBio}
                   placeholder="Tell us about yourself..."
                   onChange={(e) => setPreviewBio(e.target.value)}
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50 cursor-pointer"
                 />
               </div>
             </div>
@@ -302,7 +309,7 @@ export default function EditProfilePage() {
                   name="avatarUrl"
                   defaultValue={user.avatar?.url || ""}
                   placeholder="https://example.com/avatar.jpg"
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50 cursor-pointer"
                 />
               </div>
 
@@ -393,14 +400,14 @@ export default function EditProfilePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200"
+              className="flex-1 bg-background-lighter text-text py-3 rounded-lg hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]"
+              className="flex-1 bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98] cursor-pointer"
             >
               {loading ? "Updating..." : "Update Profile"}
             </button>

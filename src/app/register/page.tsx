@@ -5,12 +5,32 @@ import { useRouter } from "next/navigation";
 import { register } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
+/** Delay before redirecting to login after successful registration */
 const REDIRECT_DELAY = 2000;
+
+/** Shared input styling for consistent form appearance */
 const INPUT_STYLES =
   "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
+
+/** Shared button styling for consistent form appearance */
 const BUTTON_STYLES =
   "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
 
+/**
+ * User registration page with comprehensive validation
+ * 
+ * Features:
+ * - Username, email, and password validation
+ * - @stud.noroff.no email domain requirement
+ * - Username format validation (alphanumeric + underscore)
+ * - Password length requirement (8+ characters)
+ * - Venue manager role selection
+ * - Success state with automatic redirect
+ * - Error handling and display
+ * - Link to login page
+ * 
+ * @returns JSX element with registration form
+ */
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -166,7 +186,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded cursor-pointer"
           >
             Log in
           </Link>

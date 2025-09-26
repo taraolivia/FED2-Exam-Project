@@ -4,6 +4,11 @@ import type { Venue } from "@/lib/schemas/venue";
 import BookingForm from "@/app/components/BookingForm";
 import VenueMap from "@/app/components/VenueMap";
 
+/**
+ * Fetches venue data from the Noroff API
+ * @param id - The venue ID to fetch
+ * @returns Promise resolving to venue data or null if not found
+ */
 async function getVenue(id: string): Promise<Venue | null> {
   try {
     const url = `https://v2.api.noroff.dev/holidaze/venues/${id}`;
@@ -26,6 +31,20 @@ async function getVenue(id: string): Promise<Venue | null> {
   }
 }
 
+/**
+ * Individual venue details page with booking functionality
+ * 
+ * Features:
+ * - Server-side venue data fetching with ISR
+ * - Venue image gallery and details
+ * - Location information and map
+ * - Amenities display
+ * - Integrated booking form
+ * - 404 handling for invalid venues
+ * 
+ * @param params - Route parameters containing venue ID
+ * @returns JSX element with venue details or 404 page
+ */
 export default async function VenuePage({
   params,
 }: {

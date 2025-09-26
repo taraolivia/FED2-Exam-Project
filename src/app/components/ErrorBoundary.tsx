@@ -1,3 +1,6 @@
+/**
+ * Error boundary component for handling React errors
+ */
 "use client";
 import { Component, ReactNode } from "react";
 
@@ -31,7 +34,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               </h2>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                className="bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Reload page
               </button>

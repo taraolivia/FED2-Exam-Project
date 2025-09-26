@@ -1,9 +1,21 @@
-// lib/api/endpoints.ts
+/**
+ * API endpoint builders for the Noroff Holidaze API v2
+ * 
+ * Provides type-safe URL builders for all API endpoints with
+ * query parameter handling and validation. Centralizes API
+ * endpoint construction for consistency across the application.
+ */
+
+/** Base URL for the Noroff API */
 const BASE = "https://v2.api.noroff.dev";
 
+/** Available fields for sorting venues */
 export type VenueSortField = "name" | "created" | "price";
+
+/** Sort order options */
 export type SortOrder = "asc" | "desc";
 
+/** Query options for venue endpoints */
 export type VenueQueryOpts = {
   page?: number;
   limit?: number;
@@ -13,6 +25,11 @@ export type VenueQueryOpts = {
   _bookings?: boolean;
 };
 
+/**
+ * Applies common query parameters to a URL
+ * @param url - URL object to modify
+ * @param opts - Query options to apply
+ */
 function applyCommonParams(url: URL, opts?: VenueQueryOpts) {
   if (!opts) return;
   if (opts.page !== undefined) url.searchParams.set("page", String(opts.page));
@@ -24,12 +41,25 @@ function applyCommonParams(url: URL, opts?: VenueQueryOpts) {
   if (opts._bookings === true) url.searchParams.set("_bookings", "true");
 }
 
+/** Venue endpoint builders */
 export const venues = {
+  /**
+   * Builds URL for listing all venues
+   * @param opts - Query options for pagination and sorting
+   * @returns Complete API URL string
+   */
   list(opts?: VenueQueryOpts) {
     const url = new URL(`${BASE}/holidaze/venues`);
     applyCommonParams(url, opts);
     return url.toString();
   },
+  /**
+   * Builds URL for searching venues
+   * @param q - Search query string
+   * @param opts - Query options for pagination and sorting
+   * @returns Complete API URL string
+   * @throws Error if search query is empty
+   */
   search(q: string, opts?: VenueQueryOpts) {
     if (!q.trim()) throw new Error("Search query cannot be empty");
     const url = new URL(`${BASE}/holidaze/venues/search`);

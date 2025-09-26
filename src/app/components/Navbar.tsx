@@ -6,12 +6,23 @@ import { logout } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useState } from "react";
 
+/** CSS transforms for hamburger menu animation */
 const HAMBURGER_TRANSFORMS = {
   TOP_OPEN: "rotate-45 translate-y-1",
   MIDDLE_OPEN: "opacity-0",
   BOTTOM_OPEN: "-rotate-45 -translate-y-1",
 };
 
+/**
+ * Main navigation component with responsive design and user authentication
+ * 
+ * Features:
+ * - Logo and brand navigation
+ * - User authentication state (login/logout)
+ * - Mobile hamburger menu
+ * - Smooth scroll to venues section on homepage
+ * - Role-based navigation for venue managers
+ */
 export default function Navbar() {
   const { user, setUser } = useUser();
   const pathname = usePathname();
@@ -41,7 +52,7 @@ export default function Navbar() {
             <Link
               href="/#venues"
               onClick={handleVenuesClick}
-              className="hidden md:block text-text hover:text-primary focus:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded transition-colors duration-200"
+              className="hidden md:block text-text hover:text-primary focus:text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded transition-colors duration-200 cursor-pointer"
             >
               Venues
             </Link>
@@ -68,13 +79,13 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/profile"
-                    className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200"
+                    className="bg-background-lighter px-3 py-1 rounded-lg text-sm hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors duration-200 cursor-pointer"
                   >
                     {user.name}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-text/70 hover:text-text focus:text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded text-sm transition-colors duration-200"
+                    className="text-text/70 hover:text-text focus:text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded text-sm transition-colors duration-200 cursor-pointer"
                   >
                     Logout
                   </button>
@@ -83,13 +94,13 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="text-text hover:text-primary transition-colors text-sm"
+                    className="text-text hover:text-primary transition-colors text-sm cursor-pointer"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                    className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity cursor-pointer"
                   >
                     Sign up
                   </Link>
@@ -100,7 +111,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 hover:bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded transition-colors duration-200"
+              className="md:hidden p-2 hover:bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded transition-colors duration-200 cursor-pointer"
               aria-label="Toggle menu"
             >
               <div className="w-6 h-6 flex flex-col justify-center items-center">
@@ -128,7 +139,7 @@ export default function Navbar() {
                   handleVenuesClick(e);
                   setIsOpen(false);
                 }}
-                className="block text-text hover:text-primary transition-colors py-2"
+                className="block text-text hover:text-primary transition-colors py-2 cursor-pointer"
               >
                 Venues
               </Link>
@@ -136,7 +147,7 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/profile"
-                    className="block text-text hover:text-primary transition-colors py-2"
+                    className="block text-text hover:text-primary transition-colors py-2 cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
                     Profile ({user.name})
@@ -147,7 +158,7 @@ export default function Navbar() {
                       handleLogout();
                       setIsOpen(false);
                     }}
-                    className="block text-text hover:text-primary transition-colors py-2 w-full text-left"
+                    className="block text-text hover:text-primary transition-colors py-2 w-full text-left cursor-pointer"
                   >
                     Logout
                   </button>
@@ -156,14 +167,14 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="block text-text hover:text-primary transition-colors py-2"
+                    className="block text-text hover:text-primary transition-colors py-2 cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="block bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity w-fit"
+                    className="block bg-primary text-accent-darkest px-4 py-2 rounded-lg hover:opacity-90 transition-opacity w-fit cursor-pointer"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign up

@@ -1,10 +1,20 @@
+/**
+ * Venue schema definitions and validation for the Holidaze booking platform
+ * 
+ * Defines TypeScript types and Zod validation schemas for:
+ * - Venue data structure with media, location, and amenities
+ * - API response formats for single venues and venue lists
+ * - Booking information embedded within venues
+ */
 import { z } from "zod";
 
+/** Schema for media objects (images) with URL and alt text */
 export const MediaSchema = z.object({
   url: z.string().url(),
-  alt: z.string().nullable().optional(), // ✅ allow null/undefined
+  alt: z.string().nullable().optional(),
 });
 
+/** Schema for venue amenities and features */
 export const MetaSchema = z.object({
   wifi: z.boolean().optional(),
   parking: z.boolean().optional(),
@@ -12,14 +22,15 @@ export const MetaSchema = z.object({
   pets: z.boolean().optional(),
 });
 
+/** Schema for venue location information including coordinates */
 export const LocationSchema = z.object({
   address: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
   zip: z.string().nullable().optional(),
   country: z.string().nullable().optional(),
   continent: z.string().nullable().optional(),
-  lat: z.number().nullable().optional(), // ✅ allow null
-  lng: z.number().nullable().optional(), // ✅ allow null
+  lat: z.number().nullable().optional(),
+  lng: z.number().nullable().optional(),
 });
 
 const BookingSchema = z.object({

@@ -6,19 +6,27 @@ import VenuesSearchFilter from "./VenuesSearchFilter";
 import { VenuesGridSkeleton } from "./LoadingSkeleton";
 import { useSearchParams } from "next/navigation";
 
+/** API response metadata structure */
 type ApiMeta = {
   currentPage: number;
   totalCount: number;
   pageCount: number;
 };
+
+/** API response structure for venues */
 type ApiResponse = { data: Venue[]; meta: ApiMeta };
 
+/** Number of venues to display per page */
 const PAGE_SIZE = 24;
 
-// ---- Sort config
+/** Available sorting options */
 type SortId = "alpha" | "new" | "priceDesc" | "priceAsc";
 
-// Map sort IDs to API parameters
+/**
+ * Maps sort IDs to API parameters
+ * @param sortId - The sort option selected by user
+ * @returns Object with sort and sortOrder parameters for API
+ */
 function getSortParams(sortId: SortId): { sort?: string; sortOrder?: string } {
   switch (sortId) {
     case "alpha":
@@ -34,6 +42,13 @@ function getSortParams(sortId: SortId): { sort?: string; sortOrder?: string } {
   }
 }
 
+/**
+ * Fetches a single page of venues from the API
+ * @param url - The API endpoint URL with query parameters
+ * @param abortSignal - Signal to abort the request if needed
+ * @returns Promise resolving to API response with venues and metadata
+ * @throws Error if the request fails or returns non-OK status
+ */
 async function fetchPage(
   url: string,
   abortSignal: AbortSignal,
@@ -48,6 +63,19 @@ async function fetchPage(
   return (await res.json()) as ApiResponse;
 }
 
+/**
+ * Main venues grid component with search, filtering, and pagination
+ * 
+ * Features:
+ * - Server-side pagination and sorting
+ * - Search functionality via URL parameters
+ * - Multiple sort options (alphabetical, newest, price)
+ * - Loading states and error handling
+ * - Responsive grid layout
+ * - Auto-scroll to results when searching from hero
+ * 
+ * @returns JSX element containing the venues grid with controls
+ */
 export default function VenuesGrid() {
   const searchParams = useSearchParams();
   const q = searchParams.get("q") || undefined;

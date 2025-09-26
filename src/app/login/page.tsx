@@ -5,11 +5,27 @@ import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
+/** Shared input styling for consistent form appearance */
 const INPUT_STYLES =
   "w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50";
+
+/** Shared button styling for consistent form appearance */
 const BUTTON_STYLES =
   "w-full bg-primary text-accent-darkest py-2 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed active:scale-[0.98]";
 
+/**
+ * User login page with form validation and authentication
+ * 
+ * Features:
+ * - Email and password authentication
+ * - Form validation and error handling
+ * - Loading states during authentication
+ * - Automatic redirect for authenticated users
+ * - Link to registration page
+ * - @stud.noroff.no email requirement
+ * 
+ * @returns JSX element with login form
+ */
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -100,7 +116,7 @@ export default function LoginPage() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded cursor-pointer"
           >
             Sign up
           </Link>

@@ -1,6 +1,20 @@
+/**
+ * Loading skeleton components for various UI elements
+ * 
+ * Provides consistent shimmer animations and placeholder layouts
+ * while content is loading. All components use the same shimmer
+ * animation for visual consistency.
+ */
+
+/** Base shimmer animation classes for all skeleton components */
 const SHIMMER_CLASSES =
   "bg-gradient-to-r from-secondary-lighter via-background-lighter to-secondary-lighter bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]";
 
+/**
+ * Basic shimmer box component for custom skeleton layouts
+ * @param className - Additional CSS classes to apply
+ * @returns Animated shimmer div element
+ */
 export function ShimmerBox({ className = "" }: { className?: string }) {
   const classes = className
     ? `${SHIMMER_CLASSES} ${className}`
@@ -8,6 +22,10 @@ export function ShimmerBox({ className = "" }: { className?: string }) {
   return <div className={classes} />;
 }
 
+/**
+ * Loading skeleton for the venue carousel component
+ * @returns Skeleton layout matching the carousel structure
+ */
 export function VenueCarouselSkeleton() {
   return (
     <section className="relative h-[600px] bg-background overflow-hidden">
@@ -30,6 +48,10 @@ export function VenueCarouselSkeleton() {
   );
 }
 
+/**
+ * Loading skeleton for individual venue cards
+ * @returns Skeleton layout matching venue card structure
+ */
 export function VenueCardSkeleton() {
   return (
     <article className="border border-text/10 bg-background shadow-sm overflow-hidden">
@@ -45,6 +67,10 @@ export function VenueCardSkeleton() {
   );
 }
 
+/**
+ * Loading skeleton for the venues grid with search controls
+ * @returns Complete skeleton layout for venues page
+ */
 export function VenuesGridSkeleton() {
   return (
     <section className="bg-background">
@@ -70,6 +96,10 @@ export function VenuesGridSkeleton() {
   );
 }
 
+/**
+ * Loading skeleton for bookings list
+ * @returns Skeleton layout for booking items
+ */
 export function BookingsSkeleton() {
   return (
     <div className="space-y-6">
@@ -99,6 +129,10 @@ export function BookingsSkeleton() {
   );
 }
 
+/**
+ * Loading skeleton for user profile section
+ * @returns Skeleton layout matching profile structure
+ */
 export function ProfileSkeleton() {
   return (
     <div className="bg-background-lighter rounded-lg overflow-hidden mb-8">

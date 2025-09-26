@@ -1,3 +1,6 @@
+/**
+ * 404 Not Found page component
+ */
 import Link from "next/link";
 
 export default function NotFound() {
@@ -12,11 +15,11 @@ export default function NotFound() {
         <div className="space-y-2">
           <Link
             href="/"
-            className="block bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            className="block bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
           >
             Go Home
           </Link>
-          <Link href="/venues" className="block text-primary hover:underline">
+          <Link href="/venues" className="block text-primary hover:underline cursor-pointer">
             Browse Venues
           </Link>
         </div>

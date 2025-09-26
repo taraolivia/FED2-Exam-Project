@@ -5,6 +5,18 @@ import QuoteSection from "./components/QuoteSection";
 import VenuesGrid from "./components/VenuesGrid";
 import { ShimmerBox } from "./components/LoadingSkeleton";
 
+/**
+ * Homepage component for the Holidaze booking platform
+ * 
+ * Features:
+ * - Hero section with search functionality
+ * - Featured venue carousel
+ * - Inspirational quote section
+ * - Complete venues grid with search and filtering
+ * - Loading states with Suspense boundaries
+ * 
+ * @returns JSX element containing the complete homepage layout
+ */
 export default function Home() {
   return (
     <>

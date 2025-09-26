@@ -1,17 +1,37 @@
 "use client";
 import { useState } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
+import { useRouter } from "next/navigation";
 import { createBooking } from "@/lib/api/bookings";
 import type { Venue } from "@/lib/schemas/venue";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
+/** Props for the BookingForm component */
 type Props = {
+  /** The venue to book */
   venue: Venue;
+  /** Optional callback fired when booking is successful */
   onBookingSuccess?: () => void;
 };
 
+/**
+ * Booking form component for creating venue reservations
+ * 
+ * Features:
+ * - Interactive availability calendar
+ * - Date range selection with validation
+ * - Guest count validation against venue limits
+ * - Real-time price calculation
+ * - Booking conflict detection
+ * - Success/error state management
+ * - Automatic redirect to profile after booking
+ * 
+ * @param props - Component props
+ * @returns JSX element or login prompt if user not authenticated
+ */
 export default function BookingForm({ venue, onBookingSuccess }: Props) {
   const { user } = useUser();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -27,7 +47,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
           Please{" "}
           <a
             href="/login"
-            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+            className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded cursor-pointer"
           >
             log in
           </a>{" "}
@@ -100,10 +120,10 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
       onBookingSuccess?.();
       (e.target as HTMLFormElement).reset();
       
-      // Redirect to profile with refresh after 2 seconds
+      // Redirect to profile with refresh after 3 seconds
       setTimeout(() => {
-        window.location.href = '/profile?refresh=booking';
-      }, 2000);
+        router.push('/profile?refresh=booking');
+      }, 3000);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Booking failed";
@@ -219,7 +239,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
             min="1"
             max={venue.maxGuests}
             required
-            className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
+            className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50 cursor-pointer"
           />
         </div>
 
@@ -253,7 +273,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
         <button
           type="submit"
           disabled={loading || !selectedDates.from || !selectedDates.to}
-          className="w-full bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed font-medium active:scale-[0.98]"
+          className="w-full bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed font-medium active:scale-[0.98] cursor-pointer"
         >
           {loading
             ? "Booking..."

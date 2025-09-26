@@ -1,3 +1,6 @@
+/**
+ * Venue management page component
+ */
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/lib/contexts/UserContext";
@@ -109,7 +112,7 @@ export default function ManageVenuesPage() {
           <h1 className="font-heading text-3xl">My Venues</h1>
           <Link
             href="/manage-venues/create"
-            className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            className="bg-primary text-accent-darkest px-6 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer"
           >
             Create Venue
           </Link>
@@ -133,7 +136,7 @@ export default function ManageVenuesPage() {
             </p>
             <Link
               href="/manage-venues/create"
-              className="bg-primary text-accent-darkest px-8 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 font-medium"
+              className="bg-primary text-accent-darkest px-8 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 font-medium cursor-pointer"
             >
               <span>+</span> Create your first venue
             </Link>
@@ -143,7 +146,7 @@ export default function ManageVenuesPage() {
             {venues.map((venue) => (
               <div
                 key={venue.id}
-                className="bg-background-lighter rounded-xl p-6 border border-text/10 hover:border-primary/30 transition-all duration-200"
+                className="bg-background-lighter rounded-xl p-6 border border-text/10 hover:border-primary/30 transition-all duration-200 cursor-pointer"
               >
                 <div className="flex gap-6">
                   {venue.media?.[0]?.url && (
@@ -162,7 +165,7 @@ export default function ManageVenuesPage() {
                       <div className="flex-1">
                         <Link
                           href={`/venues/${venue.id}`}
-                          className="font-heading text-xl mb-2 hover:text-primary transition-colors block"
+                          className="font-heading text-xl mb-2 hover:text-primary transition-colors block cursor-pointer"
                         >
                           {venue.name}
                         </Link>
@@ -198,21 +201,21 @@ export default function ManageVenuesPage() {
                     <div className="flex gap-3 flex-wrap">
                       <Link
                         href={`/manage-venues/edit/${venue.id}`}
-                        className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                        className="bg-primary text-accent-darkest px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity cursor-pointer"
                       >
                         Edit
                       </Link>
                       {venue.bookings && venue.bookings.length > 0 && (
                         <button
                           onClick={() => setSelectedVenue(venue)}
-                          className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm hover:bg-blue-200 transition-colors"
+                          className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm hover:bg-blue-200 transition-colors cursor-pointer"
                         >
                           View Bookings ({venue.bookings.length})
                         </button>
                       )}
                       <button
                         onClick={() => handleDeleteVenue(venue.id, venue.name)}
-                        className="text-red-600 hover:text-red-800 text-sm px-2"
+                        className="text-red-600 hover:text-red-800 text-sm px-2 cursor-pointer"
                       >
                         Delete
                       </button>
@@ -235,7 +238,7 @@ export default function ManageVenuesPage() {
               </h3>
               <button
                 onClick={() => setSelectedVenue(null)}
-                className="text-text/70 hover:text-text text-2xl"
+                className="text-text/70 hover:text-text text-2xl cursor-pointer"
               >
                 ×
               </button>

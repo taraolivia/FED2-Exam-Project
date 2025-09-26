@@ -39,25 +39,31 @@ export async function updateProfile(
 /**
  * Fetches a single profile with optional bookings and venues
  * @param username - Username to fetch
+ * @param accessToken - Optional access token for authenticated requests
  * @param options - Optional query parameters
  * @returns Promise resolving to profile data
  */
 export async function getProfile(
   username: string,
+  accessToken?: string,
   options: { _bookings?: boolean; _venues?: boolean } = {},
 ) {
   validateApiKey();
   const apiKey = process.env.NEXT_PUBLIC_NOROFF_API_KEY!;
   if (!username) throw new Error("Username required");
 
+  const headers: Record<string, string> = {
+    "X-Noroff-API-Key": apiKey,
+  };
+  
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
   try {
     return await fetchJSON<ProfileSingleResponse>(
       ep.single(username, options),
-      {
-        headers: {
-          "X-Noroff-API-Key": apiKey,
-        },
-      },
+      { headers },
     );
   } catch (error: any) {
     const errorMessage =
