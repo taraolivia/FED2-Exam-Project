@@ -65,12 +65,26 @@ function ProfileContent() {
     setLoading(true);
 
     try {
+      // Load fresh profile data
+      const profileResponse = await getProfile(user.name, user.accessToken);
+      const updatedUser = {
+        ...user,
+        ...profileResponse.data,
+        accessToken: user.accessToken, // Keep the token
+      };
+      setUser(updatedUser);
+      
+      // Update localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
       // Load bookings
       const bookingsResponse = await getBookings(user.accessToken);
       setBookings(bookingsResponse.data);
 
       // Load venues if user is venue manager
-      if (user.venueManager) {
+      if (updatedUser.venueManager) {
         const venuesResponse = await getMyVenues(user.accessToken);
         setVenues(venuesResponse.data);
       } else {
@@ -82,7 +96,7 @@ function ProfileContent() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, setUser]);
 
   useEffect(() => {
     if (!user) {
