@@ -67,11 +67,13 @@ function ProfileContent() {
     try {
       // Load fresh profile data
       const profileResponse = await getProfile(user.name, user.accessToken);
+      console.log('🔍 Profile API response:', profileResponse.data);
       const updatedUser = {
         ...user,
         ...profileResponse.data,
         accessToken: user.accessToken, // Keep the token
       };
+      console.log('👤 Updated user object:', updatedUser);
       setUser(updatedUser);
       
       // Update localStorage
@@ -96,7 +98,7 @@ function ProfileContent() {
     } finally {
       setLoading(false);
     }
-  }, [user, setUser]);
+  }, [user?.name, user?.accessToken]);
 
   useEffect(() => {
     if (!user) {
