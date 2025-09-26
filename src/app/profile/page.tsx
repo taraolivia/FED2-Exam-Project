@@ -65,28 +65,12 @@ function ProfileContent() {
     setLoading(true);
 
     try {
-      // Load fresh profile data
-      const profileResponse = await getProfile(user.name, user.accessToken);
-      console.log('🔍 Profile API response:', profileResponse.data);
-      const updatedUser = {
-        ...user,
-        ...profileResponse.data,
-        accessToken: user.accessToken, // Keep the token
-      };
-      console.log('👤 Updated user object:', updatedUser);
-      setUser(updatedUser);
-      
-      // Update localStorage
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-      }
-
       // Load bookings
       const bookingsResponse = await getBookings(user.accessToken);
       setBookings(bookingsResponse.data);
 
       // Load venues if user is venue manager
-      if (updatedUser.venueManager) {
+      if (user.venueManager) {
         const venuesResponse = await getMyVenues(user.accessToken);
         setVenues(venuesResponse.data);
       } else {
@@ -98,15 +82,36 @@ function ProfileContent() {
     } finally {
       setLoading(false);
     }
-  }, [user?.name, user?.accessToken]);
+  }, [user]);
 
+  // Fetch profile data once on page load
   useEffect(() => {
     if (!user) {
       router.push("/login");
-    } else {
-      loadProfile();
+      return;
     }
-  }, [user, router, loadProfile]);
+
+    const fetchProfileData = async () => {
+      try {
+        const profileResponse = await getProfile(user.name, user.accessToken);
+        const updatedUser = {
+          ...user,
+          ...profileResponse.data,
+          accessToken: user.accessToken,
+        };
+        setUser(updatedUser);
+        
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        }
+      } catch {
+        // Silently handle error
+      }
+    };
+
+    fetchProfileData();
+    loadProfile();
+  }, [router]); // Only depend on router, not user
 
   // Handle refresh parameter separately
   useEffect(() => {
