@@ -11,8 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prebuild": "npm run typecheck && npm run lint -- --fix && npm run format",
-    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run build",
-
+    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run build"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
@@ -35,8 +34,7 @@
     "eslint-plugin-unused-imports": "^4",
     "prettier": "^3",
     "tailwindcss": "^4",
-    "typescript": "^5",
-
+    "typescript": "^5"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css,md}": [
