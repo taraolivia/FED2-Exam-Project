@@ -14,6 +14,7 @@ import {
   BookingsSkeleton,
   ShimmerBox,
 } from "@/app/components/LoadingSkeleton";
+import ConfirmModal from "@/app/components/ConfirmModal";
 
 /**
  * Main profile content component displaying user information, bookings, and venues
@@ -36,6 +37,12 @@ function ProfileContent() {
 
   const [editingBooking, setEditingBooking] = useState<string | null>(null);
   const [bookingError, setBookingError] = useState<string>("");
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    bookingId?: string;
+    title: string;
+    message: string;
+  }>({ isOpen: false, title: "", message: "" });
 
   /**
    * Calculates total price for a booking based on venue price and stay duration
@@ -107,13 +114,25 @@ function ProfileContent() {
   }, [user, loading, loadProfile]);
 
   const handleDeleteBooking = async (id: string) => {
-    if (!user || !confirm("Are you sure you want to cancel this booking?"))
-      return;
+    if (!user) return;
+    
+    setConfirmModal({
+      isOpen: true,
+      bookingId: id,
+      title: "Cancel Booking",
+      message: "Are you sure you want to cancel this booking? This action cannot be undone."
+    });
+  };
 
+  const confirmDeleteBooking = async () => {
+    if (!user || !confirmModal.bookingId) return;
+    
     try {
-      await deleteBooking(id, user.accessToken);
-      setBookings(bookings.filter((b) => b.id !== id));
+      await deleteBooking(confirmModal.bookingId, user.accessToken);
+      setBookings(bookings.filter((b) => b.id !== confirmModal.bookingId));
     } catch {}
+    
+    setConfirmModal({ isOpen: false, title: "", message: "" });
   };
 
   const handleEditBooking = async (
@@ -529,6 +548,17 @@ function ProfileContent() {
           </div>
         )}
       </div>
+      
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Cancel Booking"
+        cancelText="Keep Booking"
+        variant="danger"
+        onConfirm={confirmDeleteBooking}
+        onCancel={() => setConfirmModal({ isOpen: false, title: "", message: "" })}
+      />
     </main>
   );
 }

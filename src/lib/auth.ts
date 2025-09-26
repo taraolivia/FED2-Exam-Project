@@ -33,7 +33,7 @@ export type User = {
   name: string;
   email: string;
   accessToken: string;
-  bio?: string;
+  bio?: string | null;
   avatar?: {
     url: string;
     alt?: string;

@@ -7,6 +7,7 @@ import { getBookings, deleteBooking } from "@/lib/api/bookings";
 import type { Booking } from "@/lib/schemas/booking";
 import Image from "next/image";
 import { BookingsSkeleton } from "@/app/components/LoadingSkeleton";
+import ConfirmModal from "@/app/components/ConfirmModal";
 
 /**
  * Bookings page displaying all user bookings with management capabilities
@@ -27,6 +28,10 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    bookingId?: string;
+  }>({ isOpen: false });
   
   const loadBookings = useCallback(async () => {
     if (!user) return;
@@ -55,15 +60,21 @@ export default function BookingsPage() {
 
 
   const handleDeleteBooking = async (id: string) => {
-    if (!user || !confirm("Are you sure you want to cancel this booking?"))
-      return;
+    if (!user) return;
+    setConfirmModal({ isOpen: true, bookingId: id });
+  };
 
+  const confirmDeleteBooking = async () => {
+    if (!user || !confirmModal.bookingId) return;
+    
     try {
-      await deleteBooking(id, user.accessToken);
-      setBookings(bookings.filter((b) => b.id !== id));
+      await deleteBooking(confirmModal.bookingId, user.accessToken);
+      setBookings(bookings.filter((b) => b.id !== confirmModal.bookingId));
     } catch {
       setError("Failed to cancel booking");
     }
+    
+    setConfirmModal({ isOpen: false });
   };
 
   if (loading) {
@@ -184,6 +195,17 @@ export default function BookingsPage() {
           </div>
         )}
       </div>
+      
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title="Cancel Booking"
+        message="Are you sure you want to cancel this booking? This action cannot be undone."
+        confirmText="Cancel Booking"
+        cancelText="Keep Booking"
+        variant="danger"
+        onConfirm={confirmDeleteBooking}
+        onCancel={() => setConfirmModal({ isOpen: false })}
+      />
     </main>
   );
 }

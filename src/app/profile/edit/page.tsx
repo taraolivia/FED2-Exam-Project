@@ -38,19 +38,26 @@ export default function EditProfilePage() {
 
         if (res.ok && mounted) {
           const profileData = await res.json();
+          console.log('Profile data from API:', profileData.data);
           setUser((prev: User | null) => {
             if (!prev) return null;
-            return {
+            const updatedUser = {
               ...prev,
-              venueManager: profileData.data.venueManager,
-              bio: profileData.data.bio,
-              avatar: profileData.data.avatar,
-              banner: profileData.data.banner,
+              venueManager: profileData.data.venueManager ?? prev.venueManager,
+              bio: profileData.data.bio ?? prev.bio,
+              avatar: profileData.data.avatar ?? prev.avatar,
+              banner: profileData.data.banner ?? prev.banner,
             };
+            console.log('Updated user with bio:', updatedUser);
+            // Update localStorage too
+            if (typeof window !== "undefined") {
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            }
+            return updatedUser;
           });
         }
-      } catch {
-        // Silently handle error
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
       }
     };
 

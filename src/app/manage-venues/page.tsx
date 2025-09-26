@@ -10,6 +10,7 @@ import type { Venue } from "@/lib/schemas/venue";
 import Image from "next/image";
 import Link from "next/link";
 import { ShimmerBox } from "@/app/components/LoadingSkeleton";
+import ConfirmModal from "@/app/components/ConfirmModal";
 
 export default function ManageVenuesPage() {
   const { user } = useUser();
@@ -18,6 +19,11 @@ export default function ManageVenuesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    venueId?: string;
+    venueName?: string;
+  }>({ isOpen: false });
 
   const loadVenues = useCallback(async () => {
     if (!user) return;
@@ -51,25 +57,26 @@ export default function ManageVenuesPage() {
 
 
   const handleDeleteVenue = async (id: string, name: string) => {
-    if (
-      !user ||
-      !confirm(
-        `Are you sure you want to delete "${name}"? This action cannot be undone.`,
-      )
-    )
-      return;
+    if (!user) return;
+    setConfirmModal({ isOpen: true, venueId: id, venueName: name });
+  };
 
+  const confirmDeleteVenue = async () => {
+    if (!user || !confirmModal.venueId) return;
+    
     const originalVenues = [...venues];
     // Optimistically remove from UI
-    setVenues(venues.filter((v) => v.id !== id));
+    setVenues(venues.filter((v) => v.id !== confirmModal.venueId));
 
     try {
-      await deleteVenue(id, user.accessToken);
+      await deleteVenue(confirmModal.venueId, user.accessToken);
     } catch {
       // Restore venues on error
       setVenues(originalVenues);
       setError("Failed to delete venue");
     }
+    
+    setConfirmModal({ isOpen: false });
   };
 
   if (loading) {
@@ -278,6 +285,17 @@ export default function ManageVenuesPage() {
           </div>
         </div>
       )}
+      
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title="Delete Venue"
+        message={`Are you sure you want to delete "${confirmModal.venueName}"? This action cannot be undone and will remove all associated bookings.`}
+        confirmText="Delete Venue"
+        cancelText="Keep Venue"
+        variant="danger"
+        onConfirm={confirmDeleteVenue}
+        onCancel={() => setConfirmModal({ isOpen: false })}
+      />
     </main>
   );
 }

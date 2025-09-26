@@ -18,7 +18,7 @@ const MediaSchema = z.object({
 export const ProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  bio: z.string().optional(),
+  bio: z.string().nullable().optional(),
   avatar: MediaSchema.optional(),
   banner: MediaSchema.optional(),
   venueManager: z.boolean().default(false),
@@ -32,7 +32,7 @@ export const ProfileSchema = z.object({
 
 export const ProfileUpdateSchema = z
   .object({
-    bio: z.string().optional(),
+    bio: z.string().nullable().optional(),
     avatar: MediaSchema.optional(),
     banner: MediaSchema.optional(),
     venueManager: z.boolean().optional(),
