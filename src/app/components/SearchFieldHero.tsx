@@ -34,14 +34,15 @@ export default function SearchFieldHero() {
               type="search"
               name="q"
               placeholder="Find your dream venue"
-              className="w-full bg-transparent pl-12 md:pl-14 pr-20 py-3 md:py-4 text-lg md:text-xl text-accent placeholder-accent-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
+              className="w-full bg-transparent pl-12 md:pl-14 pr-14 sm:pr-20 py-3 md:py-4 text-sm sm:text-lg md:text-xl text-accent placeholder-accent-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               aria-label="Search destinations"
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-4 py-2 text-sm font-medium bg-primary text-accent-darkest hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 active:scale-95 cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium bg-primary text-accent-darkest hover:bg-primary/90 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 active:scale-95 cursor-pointer"
             >
-              SEARCH
+              <span className="hidden sm:inline">SEARCH</span>
+              <span className="sm:hidden">GO</span>
             </button>
           </div>
         </form>
