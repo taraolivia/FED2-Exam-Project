@@ -229,76 +229,73 @@ function ProfileContent() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-background pt-20 md:pt-32">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="font-heading text-3xl">Profile</h1>
-        </div>
+    <main className="min-h-screen bg-background">
+      {/* Full-width Banner */}
+      <div className="relative h-48 md:h-64 bg-secondary-lighter">
+        {user.banner?.url ? (
+          <Image
+            src={user.banner.url}
+            alt={user.banner.alt || "Banner"}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-text/50">
+            No banner image
+          </div>
+        )}
+      </div>
 
-        {/* Profile Info */}
-        <div className="bg-background-lighter rounded-lg overflow-hidden mb-8">
-          {/* Banner */}
-          <div className="relative h-32 bg-secondary-lighter">
-            {user.banner?.url ? (
-              <Image
-                src={user.banner.url}
-                alt={user.banner.alt || "Banner"}
-                fill
-                className="object-cover"
-              />
+      {/* Profile Content */}
+      <div className="mx-auto max-w-4xl px-4 -mt-16 relative z-10">
+        {/* Profile Info Card */}
+        <div className="bg-background-lighter rounded-lg p-6 mb-8 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            {user.avatar?.url ? (
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-background">
+                <Image
+                  src={user.avatar.url}
+                  alt={user.avatar.alt || user.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-text/50">
-                No banner image
+              <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center border-4 border-background">
+                <span className="text-3xl font-heading text-accent-darkest">
+                  {user.name?.charAt(0)?.toUpperCase() || "U"}
+                </span>
               </div>
             )}
-          </div>
 
-          <div className="p-6">
-            <div className="flex flex-col sm:flex-row items-start gap-6">
-              {user.avatar?.url ? (
-                <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
-                  <Image
-                    src={user.avatar.url}
-                    alt={user.avatar.alt || user.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto sm:mx-0">
-                  <span className="text-2xl font-heading text-accent-darkest">
-                    {user.name?.charAt(0)?.toUpperCase() || "U"}
+            <div className="flex-1 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                  <h1 className="font-heading text-3xl">{user.name}</h1>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
+                      user.venueManager
+                        ? "bg-primary/20 text-primary-darker"
+                        : "bg-text/10 text-text/70"
+                    }`}
+                  >
+                    {user.venueManager ? "Venue Manager" : "Customer"}
                   </span>
                 </div>
-              )}
-
-              <div className="flex-1 text-center sm:text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                    <h2 className="font-heading text-2xl">{user.name}</h2>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm mx-auto sm:mx-0 mt-2 sm:mt-0 w-fit ${
-                        user.venueManager
-                          ? "bg-primary/20 text-primary-darker"
-                          : "bg-text/10 text-text/70"
-                      }`}
-                    >
-                      {user.venueManager ? "Venue Manager" : "Customer"}
-                    </span>
-                  </div>
-                  <Link
-                    href="/profile/edit"
-                    className="bg-primary text-accent-darkest px-4 py-2 rounded text-sm hover:opacity-90 transition-opacity mt-4 mb-2 sm:mt-0 sm:mb-0 w-fit mx-auto sm:mx-0 cursor-pointer"
-                  >
-                    Edit Profile
-                  </Link>
-                </div>
-                <p className="text-text/70 mb-4">{user.email}</p>
-                {user.bio && <p className="text-text/80">{user.bio}</p>}
+                <Link
+                  href="/profile/edit"
+                  className="bg-primary text-accent-darkest px-6 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity mt-4 sm:mt-0 w-fit mx-auto sm:mx-0 cursor-pointer"
+                >
+                  Edit Profile
+                </Link>
               </div>
+              <p className="text-text/70 mb-4">{user.email}</p>
+              {user.bio && <p className="text-text/80 text-lg">{user.bio}</p>}
             </div>
           </div>
         </div>
+
+        <div className="pb-8">
 
         {/* My Bookings */}
         <div className="mb-8 pt-4">
@@ -568,6 +565,7 @@ function ProfileContent() {
             )}
           </div>
         )}
+        </div>
       </div>
       
       <ConfirmModal

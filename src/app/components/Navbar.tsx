@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 /** CSS transforms for hamburger menu animation */
 const HAMBURGER_TRANSFORMS = {
@@ -26,11 +27,13 @@ const HAMBURGER_TRANSFORMS = {
 export default function Navbar() {
   const { user, setUser } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     setUser(null);
+    router.push("/");
   };
 
   const handleVenuesClick = (e: React.MouseEvent) => {
@@ -46,7 +49,7 @@ export default function Navbar() {
   return (
     <nav className="bg-accent-lightest/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-[100]">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-3 items-center h-16 md:h-[115px]">
+        <div className="grid grid-cols-3 items-center h-16 sm:h-[115px]">
           {/* Left - Venues link */}
           <div className="flex items-center">
             <Link
@@ -66,7 +69,7 @@ export default function Navbar() {
                 alt="Holidaze"
                 width={270}
                 height={114}
-                className="h-12 md:h-[115px] w-auto"
+                className="h-12 sm:h-[115px] w-auto"
               />
             </Link>
           </div>

@@ -40,7 +40,7 @@ export default function VenueCard({ venue }: Props) {
           )}
 
           {/* Title bar (always visible) */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-accent/60 px-5 py-4 backdrop-blur-[1px] md:group-hover:opacity-0 md:group-focus-within:opacity-0  cursor-pointer">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-accent/60 px-5 py-4 backdrop-blur-[1px] md:group-hover:opacity-0 md:group-focus-within:opacity-0 transition-opacity duration-500 cursor-pointer">
             <h3 className="font-heading text-lg tracking-wide text-white">
               {title}
             </h3>
@@ -53,7 +53,7 @@ export default function VenueCard({ venue }: Props) {
             className="
               pointer-events-none absolute inset-x-0 bottom-0 z-40
               bg-gradient-to-t from-secondary-darker/55 to-transparent
-              opacity-100
+              opacity-100 transition-all duration-500
               md:translate-y-6 md:opacity-0
               md:group-hover:translate-y-0 md:group-hover:opacity-100
               md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100

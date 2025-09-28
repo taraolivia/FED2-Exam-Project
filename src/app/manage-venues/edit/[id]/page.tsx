@@ -125,13 +125,13 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-accent/10 border border-accent text-accent-darkest px-4 py-3 rounded">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <div className="bg-primary/10 border border-primary text-primary-darker px-4 py-3 rounded">
               ✓ Venue updated successfully! Redirecting...
             </div>
           )}
@@ -146,7 +146,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
               name="name"
               defaultValue={venue.name}
               required
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -163,7 +163,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
               rows={4}
               defaultValue={venue.description}
               required
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -180,7 +180,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                 step="0.01"
                 defaultValue={venue.price}
                 required
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
 
@@ -198,7 +198,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                 min="1"
                 defaultValue={venue.maxGuests}
                 required
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
 
@@ -217,7 +217,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                 max="5"
                 step="0.1"
                 defaultValue={venue.rating || ""}
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
               name="mediaUrl"
               defaultValue={venue.media?.[0]?.url || ""}
               placeholder="https://example.com/image.jpg"
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -251,7 +251,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
               id="mediaAlt"
               name="mediaAlt"
               defaultValue={venue.media?.[0]?.alt || ""}
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -305,7 +305,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                 name="address"
                 placeholder="Address"
                 defaultValue={venue.location?.address || ""}
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
@@ -313,14 +313,14 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                   name="city"
                   placeholder="City"
                   defaultValue={venue.location?.city || ""}
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
                 <input
                   type="text"
                   name="zip"
                   placeholder="ZIP Code"
                   defaultValue={venue.location?.zip || ""}
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
               </div>
               <input
@@ -328,7 +328,7 @@ export default function EditVenuePage({ params }: { params: { id: string } }) {
                 name="country"
                 placeholder="Country"
                 defaultValue={venue.location?.country || ""}
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
           </div>

@@ -97,13 +97,13 @@ export default function CreateVenuePage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-accent/10 border border-accent text-accent-darkest px-4 py-3 rounded">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <div className="bg-primary/10 border border-primary text-primary-darker px-4 py-3 rounded">
               ✓ Venue created successfully! Redirecting to your venues...
             </div>
           )}
@@ -118,7 +118,7 @@ export default function CreateVenuePage() {
               name="name"
               required
               placeholder="Enter venue name"
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -135,7 +135,7 @@ export default function CreateVenuePage() {
               rows={4}
               required
               placeholder="Describe your venue, amenities, and what makes it special..."
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -151,7 +151,7 @@ export default function CreateVenuePage() {
                 min="0"
                 step="0.01"
                 required
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function CreateVenuePage() {
                 name="maxGuests"
                 min="1"
                 required
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
 
@@ -187,7 +187,7 @@ export default function CreateVenuePage() {
                 max="5"
                 step="0.1"
                 placeholder="0"
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function CreateVenuePage() {
               id="mediaUrl"
               name="mediaUrl"
               placeholder="https://example.com/image.jpg"
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -219,7 +219,7 @@ export default function CreateVenuePage() {
               type="text"
               id="mediaAlt"
               name="mediaAlt"
-              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             />
           </div>
 
@@ -252,27 +252,27 @@ export default function CreateVenuePage() {
                 type="text"
                 name="address"
                 placeholder="Address"
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
                   name="city"
                   placeholder="City"
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
                 <input
                   type="text"
                   name="zip"
                   placeholder="ZIP Code"
-                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                 />
               </div>
               <input
                 type="text"
                 name="country"
                 placeholder="Country"
-                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-text/20 rounded-lg bg-background-lighter focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               />
             </div>
           </div>

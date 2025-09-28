@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/lib/auth";
 import { useUser } from "@/lib/contexts/UserContext";
 
@@ -20,13 +20,16 @@ import { useUser } from "@/lib/contexts/UserContext";
 export default function Footer() {
   const { user, setUser } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
 
   const handleLogout = () => {
     try {
       logout();
       setUser(null);
+      router.push("/");
     } catch {
-      setUser(null); // Clear user state even if logout fails
+      setUser(null);
+      router.push("/");
     }
   };
 
