@@ -180,13 +180,17 @@ This project integrates with the [Noroff Holidaze API v2](https://docs.noroff.de
 ✅ Role-based navigation  
 ✅ Server-side pagination and sorting  
 ✅ Production-ready error handling  
-✅ SEO optimization
+✅ SEO optimization  
+✅ Accessibility compliance (WCAG)  
+✅ Custom confirmation modals  
+✅ Comprehensive form validation  
+✅ Performance optimizations
 
 ## 🚀 Deployment
 
 The application is deployed on Vercel with automatic deployments from the main branch.
 
-**Live Demo:** [https://fed2-exam-project.vercel.app](https://fed2-exam-project.vercel.app)
+**Live Demo:** [https://fed-2-exam-project-holidaze-taraolivia.vercel.app](https://fed-2-exam-project-holidaze-taraolivia.vercel.app)
 
 ### Environment Variables
 
@@ -205,7 +209,7 @@ npm run start    # Start production server
 
 **Tara Olivia Bjørheim**  
 Frontend Development Student at Noroff  
-[GitHub](https://github.com/taraolivia) | [LinkedIn](https://linkedin.com/in/taraolivia)
+[GitHub](https://github.com/taraolivia) | [LinkedIn](https://www.linkedin.com/in/tara-olivia-bj%C3%B8rheim-198110228/)
 
 ## 📄 License
 
