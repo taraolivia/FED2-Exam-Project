@@ -153,12 +153,14 @@ export default function VenuesGrid() {
       className="bg-background"
     >
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <VenuesSearchFilter
-          sortId={sortId}
-          setSortId={setSortId}
-          total={total}
-          pageItemsLength={pageItems.length}
-        />
+        <header>
+          <VenuesSearchFilter
+            sortId={sortId}
+            setSortId={setSortId}
+            total={total}
+            pageItemsLength={pageItems.length}
+          />
+        </header>
 
         {loading ? (
           <VenuesGridSkeleton />
@@ -177,7 +179,7 @@ export default function VenuesGrid() {
           <div className="p-6">No venues found.</div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-label="Available venues">
               {pageItems.map((v) => (
                 <VenueCard key={v.id} venue={v} />
               ))}

@@ -8,7 +8,7 @@
 /* Design tokens (5-step scales) */
 @theme {
   /* Text */
-  --color-text: #000000;
+  --color-text: #1a1a1a;
 
   /* Background (5) */
   --color-background-darkest: #d0c1ae;
@@ -17,24 +17,24 @@
   --color-background-lighter: #f6f3ef;
   --color-background-lightest: #f6f3ee;
 
-  /* Primary (5) */
-  --color-primary-darkest: #5e7359;
-  --color-primary-darker: #839b7d;
-  --color-primary: #a7b8a3; /* base */
+  /* Primary (5) - Improved contrast */
+  --color-primary-darkest: #4a5e46;
+  --color-primary-darker: #6b7f67;
+  --color-primary: #8fa08b; /* base - darker for better contrast */
   --color-primary-lighter: #c8d3c5;
   --color-primary-lightest: #e3e9e2;
 
   /* Secondary (5) */
-  --color-secondary-darkest: #8c6d6a;
-  --color-secondary-darker: #a48782;
-  --color-secondary: #c9a9a6; /* base */
+  --color-secondary-darkest: #7a5855;
+  --color-secondary-darker: #9a7470;
+  --color-secondary: #b89894; /* base - darker for better contrast */
   --color-secondary-lighter: #e2d3d0;
   --color-secondary-lightest: #f1e6e4;
 
-  /* Accent (5) */
-  --color-accent-darkest: #37312f;
-  --color-accent-darker: #453d3b;
-  --color-accent: #534946; /* base */
+  /* Accent (5) - Improved contrast */
+  --color-accent-darkest: #2d241f;
+  --color-accent-darker: #3d342f;
+  --color-accent: #4d433e; /* base - darker for better contrast */
   --color-accent-lighter: #6e625e;
   --color-accent-lightest: #a19591;
 

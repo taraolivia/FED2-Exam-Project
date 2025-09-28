@@ -34,12 +34,21 @@ export const metadata: Metadata = {
   title: "Holidaze - Venue Booking Platform",
   description:
     "Discover and book amazing accommodations worldwide. Modern booking platform for travelers and venue managers.",
-  keywords: "venue booking, accommodation, travel, hotels, vacation rentals",
+  keywords: "venue booking, accommodation, travel, hotels, vacation rentals, holidaze",
   authors: [{ name: "Tara Olivia Bjørheim" }],
+  robots: "index, follow",
+  viewport: "width=device-width, initial-scale=1",
   openGraph: {
     title: "Holidaze - Venue Booking Platform",
     description: "Discover and book amazing accommodations worldwide",
     type: "website",
+    siteName: "Holidaze",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Holidaze - Venue Booking Platform",
+    description: "Discover and book amazing accommodations worldwide",
   },
 };
 
@@ -49,9 +58,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${marcellus.variable}`}>
       <body className="antialiased">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-accent-darkest px-4 py-2 rounded z-50">
+          Skip to main content
+        </a>
         <UserProvider>
           <Navbar />
-          {children}
+          <main id="main-content">
+            {children}
+          </main>
           <Footer />
         </UserProvider>
       </body>

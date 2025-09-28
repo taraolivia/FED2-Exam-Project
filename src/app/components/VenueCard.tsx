@@ -21,8 +21,8 @@ export default function VenueCard({ venue }: Props) {
       {/* Clickable area */}
       <Link
         href={`/venues/${venue.id}`}
-        className="block outline-none"
-        aria-label={`View ${title}`}
+        className="block outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+        aria-label={`View details for ${title}, ${location}, $${venue.price} per night`}
       >
         {/* Image */}
         <div className="relative aspect-[4/5] w-full bg-secondary-lighter">

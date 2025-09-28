@@ -187,7 +187,12 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="bg-accent/10 border border-accent text-accent-darkest px-4 py-3 rounded">
+          <div 
+            id="booking-error"
+            role="alert"
+            aria-live="polite"
+            className="bg-accent/10 border border-accent text-accent-darkest px-4 py-3 rounded"
+          >
             {error}
           </div>
         )}
@@ -268,6 +273,7 @@ export default function BookingForm({ venue, onBookingSuccess }: Props) {
         <button
           type="submit"
           disabled={loading || !selectedDates.from || !selectedDates.to}
+          aria-describedby={error ? "booking-error" : undefined}
           className="w-full bg-primary text-accent-darkest py-3 rounded-lg hover:bg-primary/90 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed font-medium active:scale-[0.98] cursor-pointer"
         >
           {loading
